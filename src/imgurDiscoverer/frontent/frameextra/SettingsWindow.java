@@ -24,6 +24,8 @@ public class SettingsWindow extends JFrame implements Window {
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
 	private JCheckBox reuseFound;
+	private JCheckBox saveNotFound;
+	private JCheckBox reuseNotFound;
 	private JButton defaults;
 	private JButton ok;
 	private JButton abort;
@@ -36,6 +38,7 @@ public class SettingsWindow extends JFrame implements Window {
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
 		setLocation(xLoc, yLoc);
+		setTitle("Settings");
 		initComponents();
 		addActionListeners();
 		setResizable(false);
@@ -72,19 +75,33 @@ public class SettingsWindow extends JFrame implements Window {
 		threadBox.setPreferredSize(new Dimension(100, 25));
 		container.add(threadBox);
 				
-		saveFound = new JCheckBox("Save names of the found images");
+		saveFound = new JCheckBox("Save hashes of the found images");
 		saveFound.setToolTipText("Saves the names of the found images to a file");
 		saveFound.setBounds(5, 140, 375, 30);
 		saveFound.setFont(font);
 		saveFound.setForeground(Color.white);
 		container.add(saveFound);
 		
-		reuseFound = new JCheckBox("Add previously found image names");
-		reuseFound.setToolTipText("Adds previously found image names to the current search");
+		reuseFound = new JCheckBox("Add previously found image hashes");
+		reuseFound.setToolTipText("Adds previously found image hashes to the current search");
 		reuseFound.setBounds(5, 170, 375, 30);
 		reuseFound.setFont(font);
 		reuseFound.setForeground(Color.white);
 		container.add(reuseFound); 
+		
+		saveNotFound = new JCheckBox("Save hashes which result in no image");
+		saveNotFound.setToolTipText("Saves the hashes of the found images to a file");
+		saveNotFound.setBounds(5, 200, 375, 30);
+		saveNotFound.setFont(font);
+		saveNotFound.setForeground(Color.white);
+		container.add(saveNotFound);
+		
+		reuseNotFound = new JCheckBox("Add previously found hashes of no images");
+		reuseNotFound.setToolTipText("Adds previously found hashes, which results in no image, to a file");
+		reuseNotFound.setBounds(5, 230, 375, 30);
+		reuseNotFound.setFont(font);
+		reuseNotFound.setForeground(Color.white);
+		container.add(reuseNotFound); 
 		
 		ok = new JButton("OK");
 		ok.setToolTipText("Use the current settings and close the window");

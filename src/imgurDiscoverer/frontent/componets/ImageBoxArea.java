@@ -145,7 +145,7 @@ public class ImageBoxArea extends JPanel{
 		private ImageBoxArea parent;
 		
 		/**
-		 * 	 * Provides a {@link JPanel}  using a {@link BoxLayout}  ( with X axis arrangement )
+		 * Provides a {@link JPanel}  using a {@link BoxLayout}  ( with X axis arrangement )
 		 * to offer resizability. Moreover its height will not be greater than {@link ImageBox#HEIGHT},
 		 * which is 230px. To accomplish this behavior it overwrites paintComponet by adding the line: <br>
 		 * <pre>
