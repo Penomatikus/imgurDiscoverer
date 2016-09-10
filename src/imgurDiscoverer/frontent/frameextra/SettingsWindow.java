@@ -33,8 +33,10 @@ public class SettingsWindow extends JFrame implements Window {
 	private JButton previous;
 	private JButton defaults;
 	private JPanel container;
+	private static Settings settings;
 	
 	public SettingsWindow() {
+		settings = new Settings();
 		setSize(400, 500);
 		double[] display = Utils.displaySize();
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
@@ -79,6 +81,7 @@ public class SettingsWindow extends JFrame implements Window {
 				
 		saveFound = new JCheckBox("Save hashes of the found images");
 		saveFound.setToolTipText("Saves the names of the found images to a file");
+		saveFound.setSelected(true);
 		saveFound.setBounds(5, 140, 375, 30);
 		saveFound.setFont(font);
 		saveFound.setForeground(Color.white);
@@ -86,6 +89,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		reuseFound = new JCheckBox("Add previously found image hashes");
 		reuseFound.setToolTipText("Adds previously found image hashes to the current search");
+		reuseFound.setSelected(true);
 		reuseFound.setBounds(5, 170, 375, 30);
 		reuseFound.setFont(font);
 		reuseFound.setForeground(Color.white);
@@ -93,6 +97,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		saveNotFound = new JCheckBox("Save hashes which result in no image");
 		saveNotFound.setToolTipText("Saves the hashes of the found images to a file");
+		saveNotFound.setSelected(true);
 		saveNotFound.setBounds(5, 200, 375, 30);
 		saveNotFound.setFont(font);
 		saveNotFound.setForeground(Color.white);
@@ -100,6 +105,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		reuseNotFound = new JCheckBox("Add previously found hashes of no images");
 		reuseNotFound.setToolTipText("Adds previously found hashes, which results in no image, to a file");
+		reuseNotFound.setSelected(true);
 		reuseNotFound.setBounds(5, 230, 375, 30);
 		reuseNotFound.setFont(font);
 		reuseNotFound.setForeground(Color.white);
@@ -107,6 +113,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		onlyCheckNotDownload = new JCheckBox("Only check if image exists.");
 		onlyCheckNotDownload.setToolTipText("Does not download found images, but tells you if they exists.");
+		onlyCheckNotDownload.setSelected(false);
 		onlyCheckNotDownload.setBounds(5, 260, 375, 30);
 		onlyCheckNotDownload.setFont(font);
 		onlyCheckNotDownload.setForeground(Color.white);
@@ -114,6 +121,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		saveSettings = new JCheckBox("Save settings for next sessions.");
 		saveSettings.setToolTipText("Saves the settings into a file and loads them for the next sessions.");
+		saveSettings.setSelected(false);
 		saveSettings.setBounds(5, 290, 375, 30);
 		saveSettings.setFont(font);
 		saveSettings.setForeground(Color.white);
@@ -152,7 +160,14 @@ public class SettingsWindow extends JFrame implements Window {
 	
 	private void addActionListeners(){
 		ok.addActionListener( (e) -> {
-			System.out.println("ok");
+			settings.getProgramSettings().setThreadIndex((Integer)threadBox.getSelectedItem());
+			settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
+			settings.getProgramSettings().setAddPreviouslyFound(reuseFound.isSelected());
+			settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
+			settings.getProgramSettings().setAddPreviouslyNotFound(reuseNotFound.isSelected());
+			settings.getProgramSettings().setOnlyDownload(onlyCheckNotDownload.isSelected());
+			settings.getProgramSettings().setSaveSettings(saveSettings.isSelected());
+			dispose();
 		});
 		
 		abort.addActionListener( (e) -> {

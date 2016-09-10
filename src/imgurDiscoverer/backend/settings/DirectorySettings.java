@@ -4,7 +4,7 @@ import java.io.File;
 
 /**
  * Provides an object, holding all information about 
- * directories to save certain files to like: 
+ * directories to save certain files to: 
  * <li> path for the downloaded images
  * <li> path for the calculated hashes ( image names ) 
  * <li> path for the settings its self <br><br>
@@ -13,7 +13,7 @@ import java.io.File;
  * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
  *
  */
-public class DirectorySettings implements Settings {
+public class DirectorySettings {
 	
 	/**
 	 * The path to all downloaded images
