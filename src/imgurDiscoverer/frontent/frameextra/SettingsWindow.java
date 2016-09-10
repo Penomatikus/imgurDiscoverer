@@ -24,12 +24,14 @@ public class SettingsWindow extends JFrame implements Window {
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
 	private JCheckBox reuseFound;
+	private JCheckBox saveSettings;
 	private JCheckBox saveNotFound;
 	private JCheckBox reuseNotFound;
-	private JButton defaults;
+	private JCheckBox onlyCheckNotDownload;
 	private JButton ok;
 	private JButton abort;
 	private JButton previous;
+	private JButton defaults;
 	private JPanel container;
 	
 	public SettingsWindow() {
@@ -102,6 +104,20 @@ public class SettingsWindow extends JFrame implements Window {
 		reuseNotFound.setFont(font);
 		reuseNotFound.setForeground(Color.white);
 		container.add(reuseNotFound); 
+		
+		onlyCheckNotDownload = new JCheckBox("Only check if image exists.");
+		onlyCheckNotDownload.setToolTipText("Does not download found images, but tells you if they exists.");
+		onlyCheckNotDownload.setBounds(5, 260, 375, 30);
+		onlyCheckNotDownload.setFont(font);
+		onlyCheckNotDownload.setForeground(Color.white);
+		container.add(onlyCheckNotDownload);
+		
+		saveSettings = new JCheckBox("Save settings for next sessions.");
+		saveSettings.setToolTipText("Saves the settings into a file and loads them for the next sessions.");
+		saveSettings.setBounds(5, 290, 375, 30);
+		saveSettings.setFont(font);
+		saveSettings.setForeground(Color.white);
+		container.add(saveSettings);
 		
 		ok = new JButton("OK");
 		ok.setToolTipText("Use the current settings and close the window");
