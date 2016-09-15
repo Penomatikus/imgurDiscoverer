@@ -106,6 +106,9 @@ public class ImageBoxArea extends JPanel{
 			rows.get(rows.size() - 1).add(box);
 			rows.get(rows.size() - 1).add(space);
 		}
+		
+		revalidate();
+		repaint();
 	}
 		
 	/**

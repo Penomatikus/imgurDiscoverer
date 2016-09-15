@@ -4,14 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import imgurDiscoverer.backend.Utils;
+import imgurDiscoverer.backend.net.DownloadManager;
+import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ControlPanel;
-import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
 import imgurDiscoverer.frontent.componets.InformationPanel;
 
@@ -41,21 +39,7 @@ public class ProgramWindow extends JFrame implements Window {
 	
 	public void initComponents() {
 		imageBoxArea = new ImageBoxArea(0, 0, getWidth(), getHeight());
-		// some testcases
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 1"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 2"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 3"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 4"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 5"));		
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 6"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 7"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 8"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 9"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 10"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 11"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 12"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 13"));
-		imageBoxArea.addBox(new ImageBox("Ich bin Nummer 14"));
+		DownloadManager.appendImageBoxArea(imageBoxArea);
 		JScrollPane scrollPane = new JScrollPane(imageBoxArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED ,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setForeground(Utils.colorImgurLightGrey());
 		scrollPane.setViewportBorder(null);

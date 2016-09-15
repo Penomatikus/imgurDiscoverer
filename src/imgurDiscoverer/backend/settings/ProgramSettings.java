@@ -5,7 +5,8 @@ import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 /**
  * Provides an object, holding information about the program 
  * behavior settings: 
- * <li> The amount of threads ( much more the index of {@link SettingsWindow}'s threadBox )
+ * <li> The amount of threads
+ * <li> The index of {@link SettingsWindow}'s threadBox 
  * <li> If the found hashes should be written to file
  * <li> If the hashes with no result should be written to file
  * <li> If the previously found hashes should be added 
@@ -19,7 +20,11 @@ import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 public class ProgramSettings {
 	
 	/**
-	 * The amount of threads ( much more the index of {@link SettingsWindow}'s threadBox )
+	 * Amount of threads
+	 */
+	private int threads;
+	/**
+	 * The index of {@link SettingsWindow}'s threadBox
 	 */
 	private int threadIndex;
 	/**
@@ -41,13 +46,13 @@ public class ProgramSettings {
 	/**
 	 * If the program only check if hash is correct
 	 */
-	private boolean onlyDownload;
+	private boolean allowDownload;
 	/**
 	 * If the settings at all should be written to file for other sessions
 	 */
 	private boolean saveSettings;
 	
-	/**
+	/**	
 	 * Provides an object, holding information about the program 
 	 * behavior settings: 
 	 * <li> The amount of threads ( much more the index of {@link SettingsWindow}'s threadBox )
@@ -59,15 +64,24 @@ public class ProgramSettings {
 	 * <li> If the settings at all should be written to file for other sessions
 	 */
 	public ProgramSettings() {
+		setThreads(16);
 		threadIndex = 1;
 		saveFoundHashes = true;
 		saveNotFoundHashes = true;
 		addPreviouslyFound = true;
 		addPreviouslyNotFound = true;
-		onlyDownload = false;
+		allowDownload = true;
 		saveSettings = false;
 	}
 	
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
+	}
+
 	/**
 	 * @return the threadIndex
 	 */
@@ -131,14 +145,14 @@ public class ProgramSettings {
 	/**
 	 * @return the onlyDownload
 	 */
-	public boolean isOnlyDownload() {
-		return onlyDownload;
+	public boolean isDownloadAllowed() {
+		return allowDownload;
 	}
 	/**
 	 * @param onlyDownload the onlyDownload to set
 	 */
-	public void setOnlyDownload(boolean onlyDownload) {
-		this.onlyDownload = onlyDownload;
+	public void setIsDownloadAllowed(boolean allowDownload) {
+		this.allowDownload = allowDownload;
 	}
 	/**
 	 * @return the saveSettings

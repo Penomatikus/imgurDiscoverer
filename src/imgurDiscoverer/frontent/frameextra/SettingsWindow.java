@@ -13,8 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import imgurDiscoverer.backend.ResourceURL;
-import imgurDiscoverer.backend.Utils;
+import imgurDiscoverer.backend.resources.ResourceImage;
+import imgurDiscoverer.backend.settings.Settings;
+import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
 
 public class SettingsWindow extends JFrame implements Window {
@@ -60,7 +61,7 @@ public class SettingsWindow extends JFrame implements Window {
 		container.setBackground(new Color(52, 55, 60 ));
 		add(container);
 		
-		container.add(new ImagePanel(ResourceURL.settingsHeader, 80, 0));
+		container.add(new ImagePanel(ResourceImage.settingsHeader, 80, 0));
 				
 		threadBoxDescription = new JLabel("Choose the amount of threads");
 		threadBoxDescription.setBounds(10, 100, 250, 30);
@@ -160,12 +161,13 @@ public class SettingsWindow extends JFrame implements Window {
 	
 	private void addActionListeners(){
 		ok.addActionListener( (e) -> {
-			settings.getProgramSettings().setThreadIndex((Integer)threadBox.getSelectedItem());
+			settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
+			settings.getProgramSettings().setThreadIndex(2);
 			settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
 			settings.getProgramSettings().setAddPreviouslyFound(reuseFound.isSelected());
 			settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
 			settings.getProgramSettings().setAddPreviouslyNotFound(reuseNotFound.isSelected());
-			settings.getProgramSettings().setOnlyDownload(onlyCheckNotDownload.isSelected());
+			settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
 			settings.getProgramSettings().setSaveSettings(saveSettings.isSelected());
 			dispose();
 		});

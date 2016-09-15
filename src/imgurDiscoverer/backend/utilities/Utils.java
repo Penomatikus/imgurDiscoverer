@@ -1,4 +1,4 @@
-package imgurDiscoverer.backend;
+package imgurDiscoverer.backend.utilities;
 
 import java.awt.Color;
 import java.awt.Desktop;

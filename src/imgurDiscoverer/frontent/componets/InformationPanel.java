@@ -7,7 +7,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import imgurDiscoverer.backend.Utils;
+import imgurDiscoverer.backend.utilities.Utils;
 
 public class InformationPanel extends JPanel {
 

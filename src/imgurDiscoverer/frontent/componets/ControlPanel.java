@@ -13,8 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import imgurDiscoverer.backend.ResourceURL;
-import imgurDiscoverer.backend.Utils;
+import imgurDiscoverer.backend.net.DownloadManager;
+import imgurDiscoverer.backend.resources.ResourceImage;
+import imgurDiscoverer.backend.settings.Settings;
+import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
 public class ControlPanel extends JPanel {
@@ -29,10 +31,12 @@ public class ControlPanel extends JPanel {
 	private JButton save;
 	private JButton settings;
 	private List<ImageBox> imageBoxs;
+	private DownloadManager downloadManager;
 	
 	public ControlPanel(List<ImageBox> imageBoxs) {
 		this.imageBoxs = imageBoxs;
-		
+		this.downloadManager = DownloadManager.createDownloadManager();
+		DownloadManager.appendSettings(new Settings());
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setBackground(Utils.colorImgurLightGrey());
 		setSize(new Dimension(1000, 400));
@@ -50,7 +54,7 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void initComponets(){
-		imagePanel = new ImagePanel(ResourceURL.logo, 0, 0);
+		imagePanel = new ImagePanel(ResourceImage.logo, 0, 0);
 		add(imagePanel, constraints);
 	
 		JPanel buttons = new JPanel(new GridBagLayout());
@@ -58,32 +62,32 @@ public class ControlPanel extends JPanel {
 		constraints.gridx++;
 		add(buttons, constraints);
 		
-		start = new JButton(new ImageIcon(ResourceURL.start));
+		start = new JButton(new ImageIcon(ResourceImage.start));
 		start.setPreferredSize(buttonSize);
 		constraints.gridx++;
 		constraints.insets = new Insets(10, 15, 5, 5);
 		buttons.add(start, constraints);
 		
 		constraints.insets = new Insets(10, 5, 5, 5);
-		stop = new JButton(new ImageIcon(ResourceURL.stop));
+		stop = new JButton(new ImageIcon(ResourceImage.stop));
 		stop.setPreferredSize(buttonSize);
 		constraints.gridx++;
 		buttons.add(stop, constraints);
 		
-		settings = new JButton(new ImageIcon(ResourceURL.settings));
+		settings = new JButton(new ImageIcon(ResourceImage.settings));
 		settings.setPreferredSize(buttonSize);
 		constraints.gridx++;
 		buttons.add(settings, constraints);
 		
 		constraints.insets = new Insets(5, 15, 5, 5);
-		save = new JButton(new ImageIcon(ResourceURL.save));
+		save = new JButton(new ImageIcon(ResourceImage.save));
 		save.setPreferredSize(buttonSize);
 		constraints.gridx = 2; 
 		constraints.gridy++;
 		buttons.add(save, constraints);
 		
 		constraints.insets = new Insets(5, 5, 5, 5);
-		load = new JButton(new ImageIcon(ResourceURL.load));
+		load = new JButton(new ImageIcon(ResourceImage.load));
 		load.setPreferredSize(buttonSize);
 		constraints.gridx++;
 		buttons.add(load, constraints);
@@ -91,11 +95,11 @@ public class ControlPanel extends JPanel {
 	
 	private void createActionListeners(){
 		start.addActionListener((e) -> {
-			
+			downloadManager.execute();
 		});
 		
 		stop.addActionListener((e) -> {
-			
+			downloadManager.cancel(true);
 		});
 		
 		save.addActionListener((e) -> {

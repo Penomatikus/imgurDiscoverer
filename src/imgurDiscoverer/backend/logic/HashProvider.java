@@ -85,7 +85,7 @@ public class HashProvider implements Singleton {
 	 * removing it from the queue.
 	 * @return	The oldest hash from {@link HashProvider#hashes} as char[]
 	 */
-	public synchronized char[] getHashAsChar(){
+	public char[] getHashAsChar(){
 		return hashes.poll();
 	}
 	

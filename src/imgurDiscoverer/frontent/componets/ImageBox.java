@@ -8,14 +8,18 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import imgurDiscoverer.backend.ResourceURL;
-import imgurDiscoverer.backend.Utils;
+import imgurDiscoverer.backend.logic.ImageData;
+import imgurDiscoverer.backend.resources.ResourceImage;
+import imgurDiscoverer.backend.utilities.Utils;
 
 /**
  * Provides an object, for displaying an ( downloaded ) image-resource. <br>
@@ -41,22 +45,20 @@ public class ImageBox extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public static final int WIDTH = 230;
 	public static final int HEIGHT = 230;
-	/**
-	 * The resource name of the image to display in the box
-	 */
-	private String resource;
+	public ImageData resource;
 	private JPanel descriptionPanel;
 	public boolean isSelected;
 	private MouseAdapter mouseAdapter;
 	private ImagePanel selected;
+	private Color background;
 	
-	public ImageBox(String resource) {
+	public ImageBox(ImageData resource) {
 		this.resource = resource;
 		this.isSelected = false;
 		
 		setBorder(BorderFactory.createDashedBorder(Color.GRAY, 2.0f, 1.8f, 1.2f, true));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setBackground(new Color(52, 55, 60 ));
+		setBackground(background = mostCommonColor());
 		setLayout(new BorderLayout());
 		setDoubleBuffered(true);
 		initMouseAdapter();
@@ -93,19 +95,50 @@ public class ImageBox extends JPanel {
 		descriptionPanel.setBackground(new Color(140, 140, 140, 30));
 		add(descriptionPanel, 0);
 		
-		JLabel description = new JLabel(resource);
+		JLabel description = new JLabel(resource.getName());
 		description.setBorder(new EmptyBorder(10, 10, 10, 10));
 		description.setFont(new Font("SansSerif", Font.PLAIN, 18));
 		description.setHorizontalAlignment(JLabel.CENTER);
 		description.setVerticalAlignment(JLabel.CENTER);
+		description.setForeground(new Color(255 - background.getRed(), 
+											255 - background.getGreen(),
+											255 - background.getBlue()));
 		descriptionPanel.add(description);
 		
 		descriptionPanel.validate();
 		descriptionPanel.repaint();
 		
-		selected = new ImagePanel(ResourceURL.selected, 0, 0);
+		selected = new ImagePanel(ResourceImage.selected, 0, 0);
 		selected.setVisible(false);
 		add(selected, BorderLayout.EAST);
+	}
+	
+	/**
+	 * http://stackoverflow.com/a/28162725
+	 * @return
+	 */
+	private Color mostCommonColor(){
+		BufferedImage image = resource.getImageData();
+		 Map<Color, Integer> colorMap = new HashMap<Color, Integer>();
+		 int x = image.getWidth(); 
+		 int y = image.getHeight();
+		 System.out.println(x + "  " + y);
+		 int highestOccurence = 0;
+		 Color mostCommon = null;
+		 for ( int i = 0; i < x; i++ ){
+			 for ( int j = 0; j < y; j++ ){
+				 Color c = new Color( image.getRGB(i, j) );
+				 int k = 0;
+				 if ( colorMap.containsKey(c))
+					 k = colorMap.get(c);
+				 colorMap.put(c, k++);
+				 if ( k > highestOccurence ) {
+					 highestOccurence = k;
+					 mostCommon = c;
+				 }
+			 }
+		 }
+		 return mostCommon;
 	}
 		
 	/**
@@ -117,7 +150,7 @@ public class ImageBox extends JPanel {
 		descriptionPanel.setBounds(2, (int)getPreferredSize().getHeight() - 50, (int)getSize().getWidth(), 100);
 	}
 	
-	public String getResourceName(){
+	public ImageData getResourceName(){
 		return resource;
 	}
 	

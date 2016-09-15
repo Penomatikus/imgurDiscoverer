@@ -43,11 +43,6 @@ public final class HashGenerator implements Singleton {
 	private static final int charactersSize = characters.size();
 	
 	/**
-	 * To pass the generated hash to
-	 */
-	private static final  HashProvider hashProvider = HashProvider.createProvider();
-	
-	/**
 	 * Used to get a random index of {@link HashGenerator#characters}
 	 */
 	private static final SplittableRandom splittableRandom = new SplittableRandom();
@@ -69,7 +64,7 @@ public final class HashGenerator implements Singleton {
 	 *  </code>
 	 * </pre>
 	 */
-	private HashGenerator(){ }
+	public HashGenerator(){ }
 	
 	/**
 	 * Factory method for creating and / or receiving the  {@link HashGenerator}.
@@ -80,14 +75,14 @@ public final class HashGenerator implements Singleton {
 	}
 	
 	/**
-	 * Generates a imgur-image-name hash between five and eight characters and passes
-	 * it to the {@link HashProvider}. <br>
+	 * Generates a imgur-image-name hash between five and eight characters. 
+	 * @return the generated hash
 	 */
-	public synchronized void generateHash(){
+	public synchronized char[] generateHash(){
 		int lenght = splittableRandom.nextInt(5, 8);
 		char[] hash = new char[lenght];
 		for (int i = 0; i < lenght; i++ )
 			hash[i] = characters.get(splittableRandom.nextInt(0, charactersSize));
-		hashProvider.addHash(hash);
+		return hash; //hashProvider.addHash(hash);
 	}
 }

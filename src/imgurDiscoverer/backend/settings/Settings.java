@@ -1,9 +1,6 @@
-package imgurDiscoverer.frontent.frameextra;
+package imgurDiscoverer.backend.settings;
 
 import java.io.Serializable;
-
-import imgurDiscoverer.backend.settings.DirectorySettings;
-import imgurDiscoverer.backend.settings.ProgramSettings;
 
 public class Settings implements Serializable {
 
