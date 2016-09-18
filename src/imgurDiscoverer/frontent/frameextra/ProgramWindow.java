@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ControlPanel;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
@@ -36,8 +35,7 @@ public class ProgramWindow extends JFrame implements Window {
 	}
 	
 	public void initComponents() {
-		imageBoxArea = new ImageBoxArea(0, 0, getWidth(), getHeight());
-		DownloadManager.appendImageBoxArea(imageBoxArea);
+		imageBoxArea = ImageBoxArea.createImageBoxArea(0, 0, getWidth(), getHeight());
 		JScrollPane scrollPane = new JScrollPane(imageBoxArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED ,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setForeground(Utils.colorImgurLightGrey());
 		scrollPane.setViewportBorder(null);
@@ -45,7 +43,7 @@ public class ProgramWindow extends JFrame implements Window {
 		scrollPane.setDoubleBuffered(true);
 		add(scrollPane, BorderLayout.CENTER);
 		
-		add(new ControlPanel(imageBoxArea.getBoxes()), BorderLayout.PAGE_START);
+		add(new ControlPanel(imageBoxArea), BorderLayout.PAGE_START);
 		
 		add(new InformationPanel(), BorderLayout.PAGE_END);
 	}

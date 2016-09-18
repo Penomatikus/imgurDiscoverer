@@ -1,5 +1,7 @@
 package imgurDiscoverer.backend.settings;
 
+import java.io.Serializable;
+
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
 /**
@@ -17,8 +19,12 @@ import imgurDiscoverer.frontent.frameextra.SettingsWindow;
  * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
  *
  */
-public class ProgramSettings {
+public class ProgramSettings implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * The amount of threads to use
 	 */
@@ -50,8 +56,6 @@ public class ProgramSettings {
 	 * <li> The amount of threads ( much more the index of {@link SettingsWindow}'s threadBox )
 	 * <li> If the found hashes should be written to file
 	 * <li> If the hashes with no result should be written to file
-	 * <li> If the previously found hashes should be added 
-	 * <li> If the previously found hashes with no result should be added
 	 * <li> If the program only check if hash is correct
 	 */
 	public ProgramSettings() {
@@ -90,7 +94,7 @@ public class ProgramSettings {
 			case 32:  threadIndex = 4; break;
 			case 64:  threadIndex = 5; break;
 			case 128: threadIndex = 6; break;
-			default: System.out.println("Jack... HOW?");
+			default: System.out.println("Jack... HOW? " + threads);
 
 		}
 	}

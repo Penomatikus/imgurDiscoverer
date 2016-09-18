@@ -1,6 +1,7 @@
 package imgurDiscoverer.backend.settings;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Provides an object, holding all information about 
@@ -13,8 +14,9 @@ import java.io.File;
  * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
  *
  */
-public class DirectorySettings {
+public class DirectorySettings implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public static final String IMAGE_SET_NAME 	= "imagesettings";
 	public static final String HASH_SET_NAME 	= "hashsettings";
 	

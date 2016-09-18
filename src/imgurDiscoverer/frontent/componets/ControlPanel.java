@@ -10,11 +10,13 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.resources.ResourceImage;
+import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
@@ -30,11 +32,13 @@ public class ControlPanel extends JPanel {
 	private JButton save;
 	private JButton settings;
 	private List<ImageBox> imageBoxs;
-	private DownloadManager downloadManager;
+	private ImageBoxArea imageBoxArea;
+	private ControlPanel parent;
 	
-	public ControlPanel(List<ImageBox> imageBoxs) {
-		this.imageBoxs = imageBoxs;
-		this.downloadManager = DownloadManager.createDownloadManager();
+	public ControlPanel(ImageBoxArea imageBoxArea) {
+		this.imageBoxArea = imageBoxArea;
+		this.imageBoxs = imageBoxArea.getBoxes();
+		this.parent = this;
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setBackground(Utils.colorImgurLightGrey());
 		setSize(new Dimension(1000, 400));
@@ -93,11 +97,15 @@ public class ControlPanel extends JPanel {
 	
 	private void createActionListeners(){
 		start.addActionListener((e) -> {
-			downloadManager.execute();
+			if ( !ProgramMonitor.isDownloadersAreRunning() )
+				new DownloadManager(imageBoxArea).execute();
+			else 
+				JOptionPane.showMessageDialog(parent,
+						"A download process is already running.");
 		});
 		
 		stop.addActionListener((e) -> {
-			downloadManager.cancel(true);
+			DownloadManager.cancelDownloadProcess();
 		});
 		
 		save.addActionListener((e) -> {

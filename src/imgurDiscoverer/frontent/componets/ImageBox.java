@@ -91,8 +91,7 @@ public class ImageBox extends JPanel {
 					SwingUtilities.invokeLater(() -> {
 						new PreviewWindow(resource, background);
 					});
-				}
-					
+				} 	
 			}		
 		};
 		

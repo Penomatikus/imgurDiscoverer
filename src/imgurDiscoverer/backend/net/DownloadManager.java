@@ -11,36 +11,115 @@ import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
 
+/**
+ * Class providing an object to manage a bunch of {@link Downloader}s working
+ * in the background, while the the EDT "will not be interrupted" ( this works, 
+ * since the {@link DownloadManager} inherit {@link SwingWorker} ). <br> 
+ * It will receive a list of {@link ImageData} objects from the {@link Downloader}s
+ * and for each of those, it will create a new {@link ImageBox} out of the provided
+ * content. In addition the {@link DownloadManager} will pass the new {@link ImageBox}s 
+ * to the programs {@link ImageBoxArea}.<br>
+ * <b>Usage: </b>
+ * <pre>
+ *  <code>
+ *   Settings.createSettings(); // provide at least the default settings
+ *   ProgramMonitor.createProgramMonitor; // create the ProgramMonitor;
+ *   
+ *   // start the DownloadManager
+ *   myJButtonToStart.addActionListener( (e) -> {
+ *      if ( !ProgramMonitor.isDownloadersAreRunning() ) 
+ *         // myImageBoxArea is created else where in the code
+ *         new DownloadManager(myImageBoxArea).execute();
+ *      else
+ *         System.exit(-1);
+ *   });
+ *   
+ *   // stop the DownloadManager
+ *   myJButtonToStop.addActionListener( (e) -> {
+ *      DownloadManager.cancelDownloadProcess();
+ *   });
+ *  </code>
+ * </pre>
+ * 
+ * The {@link DownloadManager} makes use of the classes {@link Settings} and 
+ * {@link ProgramMonitor}. The first one is used to generate the wanted amount of 
+ * {@link Downloader}s, where the second one will be used for cases, other 
+ * program parts must know if the {@link DownloadManager} is running or not, without
+ * passing the instance around the world. <br>
+ * 
+ * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
+ *
+ */
 public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
+	/**
+	 * Holds all {@link Downloader}s managed by the object
+	 */
 	private List<Downloader> downloaders;
-	private static ImageBoxArea imageBoxArea;
-	private static DownloadManager self;
+	/**
+	 * The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
+	 */
+	private ImageBoxArea imageBoxArea;
+	/**
+	 * Indicates if >> a << {@link DownloadManager} is running
+	 */
+	private static volatile boolean isRunning;
 	
-	private DownloadManager() {
+	/**
+	 * Class providing an object to manage a bunch of {@link Downloader}s working
+	 * in the background, while the the EDT "will not be interrupted" ( this works, 
+	 * since the {@link DownloadManager} inherit {@link SwingWorker} ). <br> 
+	 * It will receive a list of {@link ImageData} objects from the {@link Downloader}s
+	 * and for each of those, it will create a new {@link ImageBox} out of the provided
+	 * content. In addition the {@link DownloadManager} will pass the new {@link ImageBox}s 
+	 * to the programs {@link ImageBoxArea}.<br>
+	 * <b>Usage: </b>
+	 * <pre>
+	 *  <code>
+	 *   Settings.createSettings(); // provide at least the default settings
+	 *   ProgramMonitor.createProgramMonitor; // create the ProgramMonitor;
+	 *   
+	 *   // start the DownloadManager
+	 *   myJButtonToStart.addActionListener( (e) -> {
+	 *      if ( !ProgramMonitor.isDownloadersAreRunning() ) 
+	 *         // myImageBoxArea is created else where in the code
+	 *         new DownloadManager(myImageBoxArea).execute();
+	 *      else
+	 *         System.exit(-1);
+	 *   });
+	 *   
+	 *   // stop the DownloadManager
+	 *   myJButtonToStop.addActionListener( (e) -> {
+	 *      DownloadManager.cancelDownloadProcess();
+	 *   });
+	 *  </code>
+	 * </pre>
+	 * 
+	 * The {@link DownloadManager} makes use of the classes {@link Settings} and 
+	 * {@link ProgramMonitor}. The first one is used to generate the wanted amount of 
+	 * {@link Downloader}s, where the second one will be used for cases, other 
+	 * program parts must know if the {@link DownloadManager} is running or not, without
+	 * passing the instance around the world. <br>
+	 *
+	 * @param imageBoxArea	The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
+	 */
+	public DownloadManager(ImageBoxArea imageBoxArea) {
 		this.downloaders = new ArrayList<>();
+		this.imageBoxArea = imageBoxArea;
 	}
 	
-	public static DownloadManager createDownloadManager() {
-		return ( self == null ) ? new DownloadManager() : self;
-	}
-	
-	public static void appendImageBoxArea(ImageBoxArea imageBoxArea) {
-		DownloadManager.imageBoxArea =imageBoxArea;
-	}
-
 	@Override
 	protected Void doInBackground() throws Exception {
+		Settings settings = Settings.createSettings();
+		DownloadManager.isRunning = true;
+		ProgramMonitor.setIsDownloadersAreRunning(true);
 		try {
 			System.out.println("[ DownloadManager ] Prepare downloaders.");
 			prepareDownloaders();
 			System.out.println("[ DownloadManager ] Start downloaders.");
 			startDownloaders();
-			ProgramMonitor.setIsDownloadersAreRunning(true);
-			System.out.println(Settings.toStaticString());
-			while ( !isCancelled() ) {
-				; // do nothing but wait
-			}
+			System.out.println(settings.toStaticString());
+			while ( isRunning ); // wait until some one will change declaration "isRunning" 
 			System.out.println("[ DownloadManager ] Stop downloaders.");
 			stopDownloaders();
 		} catch (Exception e) {
@@ -51,11 +130,8 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected void process(List<ImageData> chunks) {
-		super.process(chunks);
-		for ( ImageData data : chunks ) {
+		for ( ImageData data : chunks )
 			imageBoxArea.addBox(new ImageBox(data));
-		}
-			//System.out.println(String.copyValueOf(string));
 	}
 	
 	
@@ -65,21 +141,46 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 		System.out.println("[ DownloadManager ] I am done.");
 	}
 	
+	/**
+	 * Generates the amount of {@link Downloader}s provided 
+	 * by the current {@link Settings}
+	 */
 	private void prepareDownloaders() {
-		int size = Settings.getProgramSettings().getThreads();
+		Settings settings = Settings.createSettings();
+		int size = settings.getProgramSettings().getThreads();
 		for ( int i = 0; i < size; i++ )
 			downloaders.add(new Downloader(this));
 	}
 	
+	/**
+	 * Starts the {@link Downloader}s
+	 */
 	private void startDownloaders(){
-		for ( Downloader d : downloaders ) {
+		for ( Downloader d : downloaders )
 			d.start();
-		}
 	}
 	
+	/**
+	 * Stops all running {@link Downloader}s
+	 */
 	private void stopDownloaders(){
 		for ( Downloader d : downloaders )
 			d.cancel();
+	}
+	
+	/**
+	 * Stops the {@link DownloadManager} which will result 
+	 * in {@link DownloadManager#stopDownloaders()}
+	 */
+	public static void cancelDownloadProcess(){
+		DownloadManager.isRunning = false;
+	}
+	
+	/**
+	 * @return {@link DownloadManager#isRunning}
+	 */
+	public static boolean isRunning(){
+		return DownloadManager.isRunning;
 	}
 	
 

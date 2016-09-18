@@ -35,9 +35,10 @@ public class SettingsWindow extends JFrame implements Window {
 	private JButton defaults;
 	private JPanel container;
 	private SettingsWindow parent;
+	private Settings settings;
 	
 	public SettingsWindow() {
-		Settings.createSettings();
+		settings = Settings.createSettings();
 		parent = this;
 		setSize(400, 500);
 		double[] display = Utils.displaySize();
@@ -73,10 +74,10 @@ public class SettingsWindow extends JFrame implements Window {
 		threadBoxDescription.setForeground(Color.white);
 		container.add(threadBoxDescription);
 		
-		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 68, 128});
+		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 64, 128});
 		threadBox.setBounds(280, 103, 100, 25);
 		threadBox.setBackground(new Color(52, 55, 60 ));
-		threadBox.setSelectedIndex(Settings.getProgramSettings().getThreadBoxIndex());
+		threadBox.setSelectedIndex(settings.getProgramSettings().getThreadBoxIndex());
 		container.add(threadBox);
 		
 		JLabel maxDownloadDescription = new JLabel("Maximum download size in MB");
@@ -90,12 +91,12 @@ public class SettingsWindow extends JFrame implements Window {
 		container.add(maxDownloadDescription);
 		
 		maxDownload = new IntelligentTextfield(280, 143, 100, 25);
-		maxDownload.setText(Settings.getProgramSettings().getMaxMegabyte() + "");
+		maxDownload.setText(settings.getProgramSettings().getMaxMegabyte() + "");
 		container.add(maxDownload);
 		
 		saveFound = new JCheckBox("Save hashes of the found images");
 		saveFound.setToolTipText("Saves the names of the found images to a file");
-		saveFound.setSelected(Settings.getProgramSettings().isSaveFoundHashes());
+		saveFound.setSelected(settings.getProgramSettings().isSaveFoundHashes());
 		saveFound.setBounds(5, 170, 375, 30);
 		saveFound.setFont(font);
 		saveFound.setForeground(Color.white);
@@ -103,7 +104,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		saveNotFound = new JCheckBox("Save hashes which result in no image");
 		saveNotFound.setToolTipText("Saves the hashes of the found images to a file");
-		saveNotFound.setSelected(Settings.getProgramSettings().isSaveNotFoundHashes());
+		saveNotFound.setSelected(settings.getProgramSettings().isSaveNotFoundHashes());
 		saveNotFound.setBounds(5, 200, 375, 30);
 		saveNotFound.setFont(font);
 		saveNotFound.setForeground(Color.white);
@@ -111,7 +112,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		onlyCheckNotDownload = new JCheckBox("Only check if image exists.");
 		onlyCheckNotDownload.setToolTipText("Does not download found images, but tells you if they exists.");
-		onlyCheckNotDownload.setSelected(Settings.getProgramSettings().isDownloadAllowed());
+		onlyCheckNotDownload.setSelected(settings.getProgramSettings().isDownloadAllowed());
 		onlyCheckNotDownload.setBounds(5, 230, 375, 30);
 		onlyCheckNotDownload.setFont(font);
 		onlyCheckNotDownload.setForeground(Color.white);
@@ -151,12 +152,13 @@ public class SettingsWindow extends JFrame implements Window {
 	private void addActionListeners(){
 		ok.addActionListener( (e) -> {
 			if ( !ProgramMonitor.isDownloadersAreRunning() ) {
-				Settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
-				Settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
-				Settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
-				Settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
-				Settings.getProgramSettings().setMaxMegabyte(Integer.parseInt(maxDownload.getText()));
-				System.out.println(Settings.toStaticString());
+				settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
+				settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
+				settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
+				settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
+				settings.getProgramSettings().setMaxMegabyte(Integer.parseInt(maxDownload.getText()));
+				System.out.println(settings.toStaticString());
+				settings.createSettingsFile();
 				dispose();
 			} else {
 				JOptionPane.showMessageDialog(parent, 

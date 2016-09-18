@@ -56,9 +56,9 @@ public class PreviewWindow extends JFrame {
 	}
 	
 	private void loadImageFromFile(){
-		Settings.createSettings();
+		Settings settings = Settings.createSettings();
 		try {
-			String path = Settings.getDirectorySettings().getPathForImages().getAbsolutePath() + 
+			String path = settings.getDirectorySettings().getPathForImages().getAbsolutePath() + 
 					File.separator + imageData.getName() + "." +imageData.getExtension();
 			image = ImageIO.read(new File(path));					
 		} catch (IOException e) {

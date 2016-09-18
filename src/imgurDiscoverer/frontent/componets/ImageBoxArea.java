@@ -10,6 +10,8 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import imgurDiscoverer.backend.logic.Singleton;
+
 /**
  * Provides an object, which holds all {@link ImageBox}es. Those
  * are placed with a maximum amount of four on a {@link RowPanel}.
@@ -29,7 +31,7 @@ import javax.swing.JPanel;
  * @author Stefan Jagdmann aká Penomatikus
  *
  */
-public class ImageBoxArea extends JPanel{
+public class ImageBoxArea extends JPanel implements Singleton {
 	
 	private static final long serialVersionUID = 1L;
 	/**
@@ -40,6 +42,7 @@ public class ImageBoxArea extends JPanel{
 	 * Holds all {@link RowPanel} objects
 	 */
 	private List<RowPanel> rows;
+	private static ImageBoxArea self;
 
 	/**
 	 * Provides an object, which holds all {@link ImageBox}es. Those
@@ -62,7 +65,7 @@ public class ImageBoxArea extends JPanel{
 	 * @param width		The width 
 	 * @param height	The height
 	 */
-	public ImageBoxArea(int xCord, int yCord, int width, int height) {
+	private ImageBoxArea(int xCord, int yCord, int width, int height) {
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBounds(xCord, yCord, width, height);
@@ -70,6 +73,10 @@ public class ImageBoxArea extends JPanel{
 		setDoubleBuffered(true);
 		setVisible(true);
 		initLists();
+	}
+	
+	public static ImageBoxArea createImageBoxArea(int xCord, int yCord, int width, int height){
+		return ( self == null ) ? self = new ImageBoxArea(xCord, yCord, width, height) : self;
 	}
 	
 	/**

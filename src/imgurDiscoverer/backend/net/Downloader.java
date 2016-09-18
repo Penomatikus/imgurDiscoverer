@@ -29,9 +29,10 @@ public class Downloader extends Thread {
 	private boolean isRunning;
 	
 	public Downloader(DownloadManager manager) {
+		Settings settings = Settings.createSettings();
 		this.manager = manager;
-		this.allowDownload = Settings.getProgramSettings().isDownloadAllowed();
-		this.imagePath = Settings.getDirectorySettings().getPathForImages();
+		this.allowDownload = settings.getProgramSettings().isDownloadAllowed();
+		this.imagePath = settings.getDirectorySettings().getPathForImages();
 		this.urlValidator = new URLValidator();
 		this.generator = new HashGenerator();
 		this.isRunning = true;
