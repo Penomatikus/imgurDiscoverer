@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import imgurDiscoverer.backend.logic.ImageData;
+import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
@@ -13,7 +14,6 @@ import imgurDiscoverer.frontent.componets.ImageBoxArea;
 public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	private List<Downloader> downloaders;
-	private static Settings settings;
 	private static ImageBoxArea imageBoxArea;
 	private static DownloadManager self;
 	
@@ -23,10 +23,6 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	public static DownloadManager createDownloadManager() {
 		return ( self == null ) ? new DownloadManager() : self;
-	}
-	
-	public static void appendSettings(Settings settings) {
-		DownloadManager.settings = settings;
 	}
 	
 	public static void appendImageBoxArea(ImageBoxArea imageBoxArea) {
@@ -40,6 +36,8 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 			prepareDownloaders();
 			System.out.println("[ DownloadManager ] Start downloaders.");
 			startDownloaders();
+			ProgramMonitor.setIsDownloadersAreRunning(true);
+			System.out.println(Settings.toStaticString());
 			while ( !isCancelled() ) {
 				; // do nothing but wait
 			}
@@ -63,13 +61,14 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected void done() {
+		ProgramMonitor.setIsDownloadersAreRunning(false);
 		System.out.println("[ DownloadManager ] I am done.");
 	}
 	
 	private void prepareDownloaders() {
-		int size = settings.getProgramSettings().getThreads();
+		int size = Settings.getProgramSettings().getThreads();
 		for ( int i = 0; i < size; i++ )
-			downloaders.add(new Downloader(this, settings));
+			downloaders.add(new Downloader(this));
 	}
 	
 	private void startDownloaders(){

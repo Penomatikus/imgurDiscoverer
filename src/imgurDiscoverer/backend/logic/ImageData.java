@@ -27,6 +27,10 @@ public final class ImageData {
 	 * The image name
 	 */
 	private String name;
+	/**
+	 * The file type
+	 */
+	private String extension;
 	
 	/**
 	  * Provides an object for holding image information. <br>
@@ -38,14 +42,16 @@ public final class ImageData {
 	  *    ImageData data = new ImageData("myImage");
 	  *    data.getName();
 	  *    data.getImageData();
+	  *    data.getExtension();
 	  *   </code>
 	  *  </pre>
 	 * @param imageData the image data as {@link BufferedImage}
 	 * @param name the image name
 	 */
-	public ImageData(BufferedImage imageData, String name) {
+	public ImageData(BufferedImage imageData, String name, String extension) {
 		this.imageData = imageData;
 		this.name = name;
+		this.extension = extension; 
 	}
 	
 	/**
@@ -58,12 +64,13 @@ public final class ImageData {
  	  *    ImageData data = new ImageData("myImage");
  	  *    data.getName();
  	  *    data.getImageData(); // returns null cause no BufferedImage was set
+ 	  *    data.getExtension(); // returns "none" as String
  	  *   </code>
  	  *  </pre>
 	 * @param name the image name
 	 */
 	public ImageData(String name) {
-		this(null, name);
+		this(null, name, "none");
 	}
 	
 	/**
@@ -79,6 +86,14 @@ public final class ImageData {
 	public String getName() {
 		return name;
 	}
+
+	/**
+	 * @return {@link ImageData#extension}
+	 */
+	public String getExtension() {
+		return extension;
+	}
+
 
 	
 	

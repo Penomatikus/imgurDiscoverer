@@ -15,25 +15,29 @@ import java.io.File;
  */
 public class DirectorySettings {
 	
+	public static final String IMAGE_SET_NAME 	= "imagesettings";
+	public static final String HASH_SET_NAME 	= "hashsettings";
+	
 	/**
 	 * The path to all downloaded images
 	 */
-	private static File pathForImages = dir("pathForImages"); 
+	private File pathForImages = dir("pathForImages"); 
 	/**
 	 * The path to the hash files
 	 */
-	private static File pathForHashes = dir("pathForHashes");
-	/**
-	 * The path to the the settings-file
-	 */
-	private static File pathForSettings = dir("pathForSettings");
+	private File pathForHashes = dir("pathForHashes");
+	
+	public void overwriteSettings(DirectorySettings s){
+		setPathForHashes(s.pathForHashes);
+		setPathForImages(s.pathForImages);
+	}
 	
 	/**
 	 * Creates the default directories for the {@link DirectorySettings}.   
 	 * @param subDirectory
 	 * @return
 	 */
-	private static File dir(String subDirectory) {
+	private File dir(String subDirectory) {
 		String b_slash = File.separator;
 		String tmpDir = System.getProperty("java.io.tmpdir");
 		File dir = null;
@@ -58,7 +62,7 @@ public class DirectorySettings {
 	 * @param pathForImages the pathForImages to set
 	 */
 	public void setPathForImages(File pathForImages) {
-		DirectorySettings.pathForImages = pathForImages;
+		this.pathForImages = pathForImages;
 	}
 	/**
 	 * @return the pathForHashes
@@ -70,20 +74,9 @@ public class DirectorySettings {
 	 * @param pathForHashes the pathForHashes to set
 	 */
 	public void setPathForHashes(File pathForHashes) {
-		DirectorySettings.pathForHashes = pathForHashes;
+		this.pathForHashes = pathForHashes;
 	}
-	/**
-	 * @return the pathForSettings
-	 */
-	public File getPathForSettings() {
-		return pathForSettings;
-	}
-	/**
-	 * @param pathForSettings the pathForSettings to set
-	 */
-	public void setPathForSettings(File pathForSettings) {
-		DirectorySettings.pathForSettings = pathForSettings;
-	}
+
 	
 	
 

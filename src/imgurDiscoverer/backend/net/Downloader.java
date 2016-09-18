@@ -28,10 +28,10 @@ public class Downloader extends Thread {
 	private HashGenerator generator; 
 	private boolean isRunning;
 	
-	public Downloader(DownloadManager manager, Settings settings) {
+	public Downloader(DownloadManager manager) {
 		this.manager = manager;
-		this.allowDownload = settings.getProgramSettings().isDownloadAllowed();
-		this.imagePath = settings.getDirectorySettings().getPathForImages();
+		this.allowDownload = Settings.getProgramSettings().isDownloadAllowed();
+		this.imagePath = Settings.getDirectorySettings().getPathForImages();
 		this.urlValidator = new URLValidator();
 		this.generator = new HashGenerator();
 		this.isRunning = true;
@@ -61,11 +61,12 @@ public class Downloader extends Thread {
 	private ImageData downloadImage(URL imageURL) throws IOException{
 		Document doc = Jsoup.parse(imageURL, 3000);
 		Element e = doc.getElementsByAttributeValue("rel", "image_src").first();
-		String url = e.attr("href").toString(); 
+		String url = e.attr("href").toString();
+		String extension = "";
 		BufferedImage bufferedImage = null;
 		try( InputStream in = new URL(e.attr("href").toString()).openStream() ) {
 		    bufferedImage = ImageIO.read(in);
-			String extension = url.split("\\.")[3].substring(0, 3);
+			extension = url.split("\\.")[3].substring(0, 3);
 			System.out.println("[Downloader] Getting image from " + imageURL.toString() + " to " + 
 								imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension );
 			ImageIO.write(bufferedImage, extension,
@@ -74,7 +75,7 @@ public class Downloader extends Thread {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		} 
-		return new ImageData(bufferedImage, String.valueOf(hash));
+		return new ImageData(bufferedImage, String.valueOf(hash), extension);
 	}
 	
 	/**

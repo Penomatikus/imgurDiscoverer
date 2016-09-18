@@ -15,7 +15,6 @@ import javax.swing.SwingUtilities;
 
 import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.resources.ResourceImage;
-import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
@@ -36,7 +35,6 @@ public class ControlPanel extends JPanel {
 	public ControlPanel(List<ImageBox> imageBoxs) {
 		this.imageBoxs = imageBoxs;
 		this.downloadManager = DownloadManager.createDownloadManager();
-		DownloadManager.appendSettings(new Settings());
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		setBackground(Utils.colorImgurLightGrey());
 		setSize(new Dimension(1000, 400));

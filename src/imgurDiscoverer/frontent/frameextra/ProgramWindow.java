@@ -29,8 +29,6 @@ public class ProgramWindow extends JFrame implements Window {
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
 		setLocation(xLoc, yLoc);
-		Utils.setSystemLookAndFeel();
-		Utils.setJVMArgs();
 		initComponents();
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -43,16 +41,13 @@ public class ProgramWindow extends JFrame implements Window {
 		JScrollPane scrollPane = new JScrollPane(imageBoxArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED ,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setForeground(Utils.colorImgurLightGrey());
 		scrollPane.setViewportBorder(null);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(32);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		scrollPane.setDoubleBuffered(true);
 		add(scrollPane, BorderLayout.CENTER);
 		
 		add(new ControlPanel(imageBoxArea.getBoxes()), BorderLayout.PAGE_START);
 		
 		add(new InformationPanel(), BorderLayout.PAGE_END);
-
-		
-		
-
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package imgurDiscoverer.frontent.frameextra;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
@@ -10,13 +9,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import imgurDiscoverer.backend.resources.ResourceImage;
+import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
+import imgurDiscoverer.frontent.componets.IntelligentTextfield;
 
 public class SettingsWindow extends JFrame implements Window {
 
@@ -24,20 +26,19 @@ public class SettingsWindow extends JFrame implements Window {
 	private JComboBox<Integer> threadBox;
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
-	private JCheckBox reuseFound;
-	private JCheckBox saveSettings;
 	private JCheckBox saveNotFound;
-	private JCheckBox reuseNotFound;
 	private JCheckBox onlyCheckNotDownload;
+	private IntelligentTextfield maxDownload;
 	private JButton ok;
 	private JButton abort;
 	private JButton previous;
 	private JButton defaults;
 	private JPanel container;
-	private static Settings settings;
+	private SettingsWindow parent;
 	
 	public SettingsWindow() {
-		settings = new Settings();
+		Settings.createSettings();
+		parent = this;
 		setSize(400, 500);
 		double[] display = Utils.displaySize();
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
@@ -52,7 +53,6 @@ public class SettingsWindow extends JFrame implements Window {
 	
 	@Override
 	public void initComponents() {
-		Utils.setSystemLookAndFeel();
 		Font font = new Font("SansSerif", Font.BOLD, 15);
 		
 		container = new JPanel();
@@ -72,61 +72,50 @@ public class SettingsWindow extends JFrame implements Window {
 		threadBoxDescription.setVisible(true);
 		threadBoxDescription.setForeground(Color.white);
 		container.add(threadBoxDescription);
-
+		
 		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 68, 128});
 		threadBox.setBounds(280, 103, 100, 25);
 		threadBox.setBackground(new Color(52, 55, 60 ));
-		threadBox.setSelectedIndex(1);
-		threadBox.setPreferredSize(new Dimension(100, 25));
+		threadBox.setSelectedIndex(Settings.getProgramSettings().getThreadBoxIndex());
 		container.add(threadBox);
-				
+		
+		JLabel maxDownloadDescription = new JLabel("Maximum download size in MB");
+		maxDownloadDescription.setBounds(10, 140, 250, 30);
+		maxDownloadDescription.setFont(font);
+		maxDownloadDescription.setHorizontalAlignment(SwingConstants.CENTER);
+		maxDownloadDescription.setVerticalAlignment(SwingConstants.CENTER);
+		maxDownloadDescription.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+		maxDownloadDescription.setVisible(true);
+		maxDownloadDescription.setForeground(Color.white);
+		container.add(maxDownloadDescription);
+		
+		maxDownload = new IntelligentTextfield(280, 143, 100, 25);
+		maxDownload.setText(Settings.getProgramSettings().getMaxMegabyte() + "");
+		container.add(maxDownload);
+		
 		saveFound = new JCheckBox("Save hashes of the found images");
 		saveFound.setToolTipText("Saves the names of the found images to a file");
-		saveFound.setSelected(true);
-		saveFound.setBounds(5, 140, 375, 30);
+		saveFound.setSelected(Settings.getProgramSettings().isSaveFoundHashes());
+		saveFound.setBounds(5, 170, 375, 30);
 		saveFound.setFont(font);
 		saveFound.setForeground(Color.white);
 		container.add(saveFound);
 		
-		reuseFound = new JCheckBox("Add previously found image hashes");
-		reuseFound.setToolTipText("Adds previously found image hashes to the current search");
-		reuseFound.setSelected(true);
-		reuseFound.setBounds(5, 170, 375, 30);
-		reuseFound.setFont(font);
-		reuseFound.setForeground(Color.white);
-		container.add(reuseFound); 
-		
 		saveNotFound = new JCheckBox("Save hashes which result in no image");
 		saveNotFound.setToolTipText("Saves the hashes of the found images to a file");
-		saveNotFound.setSelected(true);
+		saveNotFound.setSelected(Settings.getProgramSettings().isSaveNotFoundHashes());
 		saveNotFound.setBounds(5, 200, 375, 30);
 		saveNotFound.setFont(font);
 		saveNotFound.setForeground(Color.white);
-		container.add(saveNotFound);
-		
-		reuseNotFound = new JCheckBox("Add previously found hashes of no images");
-		reuseNotFound.setToolTipText("Adds previously found hashes, which results in no image, to a file");
-		reuseNotFound.setSelected(true);
-		reuseNotFound.setBounds(5, 230, 375, 30);
-		reuseNotFound.setFont(font);
-		reuseNotFound.setForeground(Color.white);
-		container.add(reuseNotFound); 
+		container.add(saveNotFound); 
 		
 		onlyCheckNotDownload = new JCheckBox("Only check if image exists.");
 		onlyCheckNotDownload.setToolTipText("Does not download found images, but tells you if they exists.");
-		onlyCheckNotDownload.setSelected(false);
-		onlyCheckNotDownload.setBounds(5, 260, 375, 30);
+		onlyCheckNotDownload.setSelected(Settings.getProgramSettings().isDownloadAllowed());
+		onlyCheckNotDownload.setBounds(5, 230, 375, 30);
 		onlyCheckNotDownload.setFont(font);
 		onlyCheckNotDownload.setForeground(Color.white);
 		container.add(onlyCheckNotDownload);
-		
-		saveSettings = new JCheckBox("Save settings for next sessions.");
-		saveSettings.setToolTipText("Saves the settings into a file and loads them for the next sessions.");
-		saveSettings.setSelected(false);
-		saveSettings.setBounds(5, 290, 375, 30);
-		saveSettings.setFont(font);
-		saveSettings.setForeground(Color.white);
-		container.add(saveSettings);
 		
 		ok = new JButton("OK");
 		ok.setToolTipText("Use the current settings and close the window");
@@ -161,15 +150,18 @@ public class SettingsWindow extends JFrame implements Window {
 	
 	private void addActionListeners(){
 		ok.addActionListener( (e) -> {
-			settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
-			settings.getProgramSettings().setThreadIndex(2);
-			settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
-			settings.getProgramSettings().setAddPreviouslyFound(reuseFound.isSelected());
-			settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
-			settings.getProgramSettings().setAddPreviouslyNotFound(reuseNotFound.isSelected());
-			settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
-			settings.getProgramSettings().setSaveSettings(saveSettings.isSelected());
-			dispose();
+			if ( !ProgramMonitor.isDownloadersAreRunning() ) {
+				Settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
+				Settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
+				Settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
+				Settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
+				Settings.getProgramSettings().setMaxMegabyte(Integer.parseInt(maxDownload.getText()));
+				System.out.println(Settings.toStaticString());
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(parent, 
+						"Can't apply settings while download is in process.");
+			}
 		});
 		
 		abort.addActionListener( (e) -> {
@@ -182,9 +174,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		previous.addActionListener( (e) -> {
 			System.out.println("previous");
-		});
-		
-		
+		});	
 	}
 	
 }

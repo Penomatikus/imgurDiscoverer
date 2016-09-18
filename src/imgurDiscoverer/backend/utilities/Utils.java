@@ -9,6 +9,9 @@ import java.net.URI;
 
 import javax.swing.UIManager;
 
+import imgurDiscoverer.backend.settings.ProgramMonitor;
+import imgurDiscoverer.backend.settings.Settings;
+
 public class Utils {
 	
 	/**
@@ -38,6 +41,14 @@ public class Utils {
 	 * */
 	public static void setJVMArgs(){
 		System.setProperty("sun.java2d.opengl", "true");
+		System.setProperty("sun.java2d.noddraw", "true");
+	}
+	
+	public static void prepareStartUp(){
+		setSystemLookAndFeel();
+		setJVMArgs();
+		Settings.createSettings();
+		ProgramMonitor.createProgramMonitor();
 	}
 	
 	/**

@@ -18,11 +18,11 @@ import imgurDiscoverer.frontent.frameextra.SettingsWindow;
  *
  */
 public class ProgramSettings {
-	
+
 	/**
-	 * Amount of threads
+	 * The amount of threads to use
 	 */
-	private int threads;
+	private int threads; 
 	/**
 	 * The index of {@link SettingsWindow}'s threadBox
 	 */
@@ -36,21 +36,13 @@ public class ProgramSettings {
 	 */
 	private boolean saveNotFoundHashes;
 	/**
-	 * If the previously found hashes should be added 
-	 */
-	private boolean addPreviouslyFound;
-	/**
-	 * If the previously found hashes with no result should be added
-	 */
-	private boolean addPreviouslyNotFound;
-	/**
 	 * If the program only check if hash is correct
 	 */
 	private boolean allowDownload;
 	/**
-	 * If the settings at all should be written to file for other sessions
+	 * The maximum amount of MB to download
 	 */
-	private boolean saveSettings;
+	private int maxMegabyte;
 	
 	/**	
 	 * Provides an object, holding information about the program 
@@ -61,38 +53,50 @@ public class ProgramSettings {
 	 * <li> If the previously found hashes should be added 
 	 * <li> If the previously found hashes with no result should be added
 	 * <li> If the program only check if hash is correct
-	 * <li> If the settings at all should be written to file for other sessions
 	 */
 	public ProgramSettings() {
-		setThreads(16);
+		threads = 4;
 		threadIndex = 1;
 		saveFoundHashes = true;
 		saveNotFoundHashes = true;
-		addPreviouslyFound = true;
-		addPreviouslyNotFound = true;
 		allowDownload = true;
-		saveSettings = false;
+		setMaxMegabyte(5000);
 	}
 	
+	/**
+	 * @return {@link ProgramSettings#threads}
+	 */
 	public int getThreads() {
 		return threads;
 	}
-
-	public void setThreads(int threads) {
+	
+	/**
+	 * @param threads {@link ProgramSettings#threads}
+	 */
+	public void setThreads(int threads){
 		this.threads = threads;
+		setThreadIndex();
 	}
 
 	/**
-	 * @return the threadIndex
+	 * Sets the index of {@link SettingsWindow}'s threadBox
 	 */
-	public int getThreadIndex() {
-		return threadIndex;
+	public void setThreadIndex() {
+		switch(threads){
+			case 2:   threadIndex = 0; break;
+			case 4:   threadIndex = 1; break;
+			case 8:   threadIndex = 2; break;
+			case 16:  threadIndex = 3; break;
+			case 32:  threadIndex = 4; break;
+			case 64:  threadIndex = 5; break;
+			case 128: threadIndex = 6; break;
+			default: System.out.println("Jack... HOW?");
+
+		}
 	}
-	/**
-	 * @param threadIndex the threadIndex to set
-	 */
-	public void setThreadIndex(int threadIndex) {
-		this.threadIndex = threadIndex;
+	
+	public int getThreadBoxIndex(){
+		return threadIndex;
 	}
 	/**
 	 * @return the saveFoundHashes
@@ -119,30 +123,6 @@ public class ProgramSettings {
 		this.saveNotFoundHashes = saveNotFoundHashes;
 	}
 	/**
-	 * @return the addPreviouslyFound
-	 */
-	public boolean isAddPreviouslyFound() {
-		return addPreviouslyFound;
-	}
-	/**
-	 * @param addPreviouslyFound the addPreviouslyFound to set
-	 */
-	public void setAddPreviouslyFound(boolean addPreviouslyFound) {
-		this.addPreviouslyFound = addPreviouslyFound;
-	}
-	/**
-	 * @return the addPreviouslyNotFound
-	 */
-	public boolean isAddPreviouslyNotFound() {
-		return addPreviouslyNotFound;
-	}
-	/**
-	 * @param addPreviouslyNotFound the addPreviouslyNotFound to set
-	 */
-	public void setAddPreviouslyNotFound(boolean addPreviouslyNotFound) {
-		this.addPreviouslyNotFound = addPreviouslyNotFound;
-	}
-	/**
 	 * @return the onlyDownload
 	 */
 	public boolean isDownloadAllowed() {
@@ -154,19 +134,12 @@ public class ProgramSettings {
 	public void setIsDownloadAllowed(boolean allowDownload) {
 		this.allowDownload = allowDownload;
 	}
-	/**
-	 * @return the saveSettings
-	 */
-	public boolean isSaveSettings() {
-		return saveSettings;
-	}
-	/**
-	 * @param saveSettings the saveSettings to set
-	 */
-	public void setSaveSettings(boolean saveSettings) {
-		this.saveSettings = saveSettings;
-	}
-	
-	
 
+	public int getMaxMegabyte() {
+		return maxMegabyte;
+	}
+
+	public void setMaxMegabyte(int maxMegabyte) {
+		this.maxMegabyte = maxMegabyte;
+	}
 }
