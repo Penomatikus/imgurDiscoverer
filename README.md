@@ -1,5 +1,5 @@
 # imgurDiscoverer
-The known image hoster and image based community does not provide full privacy protection to its hosted images. The program will exploid this circumstance and generates random hashes wich may be a valid image name and displays all thoose in a user friendly GUI.    
+The known image hoster and image based community does not provide full privacy protection to its hosted images. The program will exploit this circumstance and generates random hashes which may be a valid image name and displays all those in a user friendly GUI.    
 You can find the imgur privacy police at: [Imgur privacy police](https://imgur.com/privacy)
 
 ### System requirements   
