@@ -157,7 +157,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 			int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
 			int max = settings.getProgramSettings().getMaxMegabyte();
 			bar.setValue(barValue);
-			String barString = new DecimalFormat("####0.00").format(barValue) + "/"	+ max;
+			String barString = new DecimalFormat("####0.00").format(barValue) + " mb / "	+ max + " mb";
 			bar.setString(barString);
 			if ( barValue > max ) {
 				DownloadManager.isRunning = false;
