@@ -1,8 +1,10 @@
 package imgurDiscoverer.backend.net;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import imgurDiscoverer.backend.logic.ImageData;
@@ -10,6 +12,7 @@ import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
+import imgurDiscoverer.frontent.componets.InformationPanel;
 
 /**
  * Class providing an object to manage a bunch of {@link Downloader}s working
@@ -61,6 +64,14 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 */
 	private ImageBoxArea imageBoxArea;
 	/**
+	 * A progress bar, to show the current download size
+	 */
+	private JProgressBar bar;
+	/**
+	 * The settings to use
+	 */
+	private Settings settings;
+	/**
 	 * Indicates if >> a << {@link DownloadManager} is running
 	 */
 	private static volatile boolean isRunning;
@@ -103,9 +114,19 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 *
 	 * @param imageBoxArea	The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
 	 */
-	public DownloadManager(ImageBoxArea imageBoxArea) {
+	public DownloadManager(ImageBoxArea imageBoxArea ) {
 		this.downloaders = new ArrayList<>();
 		this.imageBoxArea = imageBoxArea;
+		this.bar = InformationPanel.getBar();
+		this.settings = Settings.createSettings();
+		prepareBar();
+	}
+	
+	private void prepareBar(){
+		bar.setMinimum(0);
+		bar.setMaximum(settings.getProgramSettings().getMaxMegabyte());
+		bar.setStringPainted(true);
+		bar.setString("0/ " + settings.getProgramSettings().getMaxMegabyte());
 	}
 	
 	@Override
@@ -130,8 +151,19 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected void process(List<ImageData> chunks) {
-		for ( ImageData data : chunks )
+		for ( ImageData data : chunks ) {
 			imageBoxArea.addBox(new ImageBox(data));
+			ProgramMonitor.addDownloadedMegabyteAtRuntime(data.getFileSize());
+			int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
+			int max = settings.getProgramSettings().getMaxMegabyte();
+			bar.setValue(barValue);
+			String barString = new DecimalFormat("####0.00").format(barValue) + "/"	+ max;
+			bar.setString(barString);
+			if ( barValue > max ) {
+				DownloadManager.isRunning = false;
+				bar.setString(barString + " ( letting downloaders work to end ");
+			}
+		}
 	}
 	
 	

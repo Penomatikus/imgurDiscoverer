@@ -79,6 +79,24 @@ public class Settings implements Serializable, Singleton {
 			System.err.println("[ Settings ] \".settings\" file not found.");
 		}
 		self = settings;
+		createDirIfNotExist();
+	}
+	
+	private static void createDirIfNotExist(){
+		DirectorySettings directorySettings = self.getDirectorySettings();
+		try {
+			if ( !directorySettings.getPathForHashes().exists() ) 
+				directorySettings.getPathForHashes().mkdirs();
+			if ( !directorySettings.getPathForImages().exists() )
+				directorySettings.getPathForImages().mkdirs();
+				
+		} catch (Exception e) {
+			System.err.println("[ Settings ] Could not create one or borth of: \n" + 
+					"\t - " + directorySettings.getPathForHashes().getAbsolutePath() + 
+					"\n\t - " + directorySettings.getPathForImages().getAbsolutePath());
+		}
+		
+			
 	}
 	
 	public String toStaticString() {

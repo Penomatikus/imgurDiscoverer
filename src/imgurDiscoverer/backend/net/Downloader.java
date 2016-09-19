@@ -65,18 +65,22 @@ public class Downloader extends Thread {
 		String url = e.attr("href").toString();
 		String extension = "";
 		BufferedImage bufferedImage = null;
+		double fileSize = 0;
 		try( InputStream in = new URL(e.attr("href").toString()).openStream() ) {
 		    bufferedImage = ImageIO.read(in);
 			extension = url.split("\\.")[3].substring(0, 3);
 			System.out.println("[Downloader] Getting image from " + imageURL.toString() + " to " + 
 								imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension );
-			ImageIO.write(bufferedImage, extension,
-					new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension));
-
+			File file = new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension);
+			ImageIO.write(bufferedImage, extension,	file);
+			double bytes = file.length();
+			double kilobytes = (bytes / 1024);
+			double megabytes = (kilobytes / 1024);
+			fileSize = megabytes;
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		} 
-		return new ImageData(bufferedImage, String.valueOf(hash), extension);
+		return new ImageData(bufferedImage, fileSize ,String.valueOf(hash), extension);
 	}
 	
 	/**

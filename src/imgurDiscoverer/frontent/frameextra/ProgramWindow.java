@@ -45,7 +45,7 @@ public class ProgramWindow extends JFrame implements Window {
 		
 		add(new ControlPanel(imageBoxArea), BorderLayout.PAGE_START);
 		
-		add(new InformationPanel(), BorderLayout.PAGE_END);
+		add(InformationPanel.createInformationPanel(), BorderLayout.PAGE_END);
 	}
 
 	@Override

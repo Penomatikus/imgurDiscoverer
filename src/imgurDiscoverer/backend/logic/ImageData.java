@@ -31,6 +31,10 @@ public final class ImageData {
 	 * The file type
 	 */
 	private String extension;
+	/**
+	 * The file size of the image
+	 */
+	private double fileSize;
 	
 	/**
 	  * Provides an object for holding image information. <br>
@@ -48,8 +52,9 @@ public final class ImageData {
 	 * @param imageData the image data as {@link BufferedImage}
 	 * @param name the image name
 	 */
-	public ImageData(BufferedImage imageData, String name, String extension) {
+	public ImageData(BufferedImage imageData, double fileSize, String name, String extension) {
 		this.imageData = imageData;
+		this.fileSize = fileSize;
 		this.name = name;
 		this.extension = extension; 
 	}
@@ -70,7 +75,7 @@ public final class ImageData {
 	 * @param name the image name
 	 */
 	public ImageData(String name) {
-		this(null, name, "none");
+		this(null, 0, name, "none");
 	}
 	
 	/**
@@ -94,8 +99,17 @@ public final class ImageData {
 		return extension;
 	}
 
-
+	/**
+	 * @return {@link ImageData#fileSize}
+	 */
+	public double getFileSize() {
+		return fileSize;
+	}
 	
-	
-
+	/**
+	 * @param size The calculated file size
+	 */
+	public void setFileSize(double size){
+		this.fileSize = size;
+	}
 }

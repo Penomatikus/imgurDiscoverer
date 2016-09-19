@@ -33,6 +33,7 @@ public class SettingsWindow extends JFrame implements Window {
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
 	private JCheckBox saveNotFound;
+	private JCheckBox forceQuit;
 	private JLabel saveImagePath;
 	private JLabel saveHashDes;
 	private JLabel saveImageDes;
@@ -76,7 +77,7 @@ public class SettingsWindow extends JFrame implements Window {
 	public SettingsWindow() {
 		settings = Settings.createSettings();
 		parent = this;
-		setSize(400, 550);
+		setSize(400, 580);
 		double[] display = Utils.displaySize();
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
@@ -94,7 +95,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		container = new JPanel();
 		container.setLayout(null);
-		container.setBounds(0, 0, 400, 550);
+		container.setBounds(0, 0, 400, 580);
 		container.setBackground(new Color(52, 55, 60 ));
 		add(container);
 		
@@ -197,7 +198,7 @@ public class SettingsWindow extends JFrame implements Window {
 		Border border3 = BorderFactory.createTitledBorder(null, "Download management", TitledBorder.LEFT, TitledBorder.TOP, font2, Utils.colorImgurGreen());
 		JPanel download = new JPanel(null);
 		download.setBorder(border3);
-		download.setBounds(5, 370, 390, 55);
+		download.setBounds(5, 370, 390, 85);
 		download.setBackground(Utils.colorImgurLightGrey());
 		container.add(download);
 		
@@ -209,27 +210,35 @@ public class SettingsWindow extends JFrame implements Window {
 		onlyCheckNotDownload.setForeground(Utils.colorImgurDarkGrey());
 		download.add(onlyCheckNotDownload);
 		
+		forceQuit = new JCheckBox("Force downloaders to stop when cancelled");
+		forceQuit.setToolTipText("Forces downloaders to stop immediately when cancelled ( may results in image damages ) ");
+		forceQuit.setSelected(settings.getProgramSettings().isDownloadAllowed());
+		forceQuit.setBounds(5, 49, 375, 30);
+		forceQuit.setFont(font);
+		forceQuit.setForeground(Utils.colorImgurDarkGrey());
+		download.add(forceQuit);
+		
 		ok = new JButton("OK");
 		ok.setToolTipText("Use the current settings and close the window");
-		ok.setBounds(5, 450, 190, 30);
+		ok.setBounds(5, 480, 190, 30);
 		ok.setFont(font);
 		container.add(ok);
 		
 		abort = new JButton("Abort");
 		abort.setToolTipText("Closes the window and dont use the new settings");
-		abort.setBounds(200, 450, 190, 30);
+		abort.setBounds(200, 480, 190, 30);
 		abort.setFont(font);
 		container.add(abort);
 		
 		defaults = new JButton("Restore defaults");
 		defaults.setToolTipText("Restores the settings to the default imgur discoverer settings");
-		defaults.setBounds(5, 490, 190, 30);
+		defaults.setBounds(5, 520, 190, 30);
 		defaults.setFont(font);
 		container.add(defaults);
 		
 		previous = new JButton("Previous settings");
 		previous.setToolTipText("Changes the settings to the previously used ones");
-		previous.setBounds(200, 490, 190, 30);
+		previous.setBounds(200, 520, 190, 30);
 		previous.setFont(font);
 		container.add(previous);
 			
