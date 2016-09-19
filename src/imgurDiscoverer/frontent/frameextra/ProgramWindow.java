@@ -3,10 +3,12 @@ package imgurDiscoverer.frontent.frameextra;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
+import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ControlPanel;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
@@ -18,6 +20,7 @@ public class ProgramWindow extends JFrame implements Window {
 	private ImageBoxArea imageBoxArea;
 	
 	public ProgramWindow(String title, int width, int height) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		setTitle(title);
 		setLayout(new BorderLayout());
 		setBackground(new Color(20, 21, 24));

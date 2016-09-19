@@ -12,6 +12,7 @@ public interface ResourceImage {
 	public URL logo = ResourceImage.class.getResource("/logo.png");
 	public URL settingsHeader = ResourceImage.class.getResource("/settingsHead.png");
 	public URL selected = ResourceImage.class.getResource("/selected.png");
+	public URL programIcon = ResourceImage.class.getResource("/imgurdiscoverer.png");
 
 	
 	/***** Thanks to: https://www.iconfinder.com/iconsets/small-n-flat**/

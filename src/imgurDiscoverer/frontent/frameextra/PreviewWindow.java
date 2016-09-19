@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import imgurDiscoverer.backend.logic.ImageData;
+import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
@@ -29,7 +31,7 @@ public class PreviewWindow extends JFrame {
 	
 	public PreviewWindow(ImageData imageData, Color commonColor) {
 		this.imageData = imageData;
-		
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		double[] display = Utils.displaySize();
 		setMinimumSize(new Dimension(1024, 768));
 		setMaximumSize(new Dimension((int)display[0], (int)display[1]));

@@ -2,6 +2,7 @@ package imgurDiscoverer.frontent.frameextra;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -75,6 +76,7 @@ public class SettingsWindow extends JFrame implements Window {
 	};
 	
 	public SettingsWindow() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		settings = Settings.createSettings();
 		parent = this;
 		setSize(400, 580);
