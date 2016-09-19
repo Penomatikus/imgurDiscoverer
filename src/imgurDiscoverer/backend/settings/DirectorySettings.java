@@ -17,17 +17,20 @@ import java.io.Serializable;
 public class DirectorySettings implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	public static final String DEFAULT_PATH_HASHES = "pathForHashes";
+	public static final String DEFAULT_PATH_IMAGES = "pathForImages";
 	public static final String IMAGE_SET_NAME 	= "imagesettings";
 	public static final String HASH_SET_NAME 	= "hashsettings";
+	
 	
 	/**
 	 * The path to all downloaded images
 	 */
-	private File pathForImages = dir("pathForImages"); 
+	private File pathForImages = tmpdir(DEFAULT_PATH_IMAGES); 
 	/**
 	 * The path to the hash files
 	 */
-	private File pathForHashes = dir("pathForHashes");
+	private File pathForHashes = tmpdir(DEFAULT_PATH_HASHES);
 	
 	public void overwriteSettings(DirectorySettings s){
 		setPathForHashes(s.pathForHashes);
@@ -39,7 +42,7 @@ public class DirectorySettings implements Serializable {
 	 * @param subDirectory
 	 * @return
 	 */
-	private File dir(String subDirectory) {
+	public File tmpdir(String subDirectory) {
 		String b_slash = File.separator;
 		String tmpDir = System.getProperty("java.io.tmpdir");
 		File dir = null;

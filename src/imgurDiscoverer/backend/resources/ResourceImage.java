@@ -20,6 +20,7 @@ public interface ResourceImage {
 	public URL settings = ResourceImage.class.getResource("/settings.png");
 	public URL load = ResourceImage.class.getResource("/load.png");
 	public URL save = ResourceImage.class.getResource("/save.png");
+	public URL dic = ResourceImage.class.getResource("/dic.png");
 	/******************************************************************/
 
 	
