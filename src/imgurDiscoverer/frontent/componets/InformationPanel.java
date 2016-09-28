@@ -19,7 +19,7 @@ public class InformationPanel extends JPanel implements Singleton {
 	private InformationPanel() {
 		setLayout(new BorderLayout());
 		setBackground(Utils.colorImgurDarkGrey());
-		setPreferredSize(new Dimension(100, 30));
+		setPreferredSize(new Dimension(100, 20));
 		setBorder(BorderFactory.createLineBorder(Utils.colorImgurLightGrey()));
 		initCompontents();
 	}

@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
@@ -42,7 +43,8 @@ public class ProgramWindow extends JFrame implements Window {
 		JScrollPane scrollPane = new JScrollPane(imageBoxArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED ,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setForeground(Utils.colorImgurLightGrey());
 		scrollPane.setViewportBorder(null);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		scrollPane.setDoubleBuffered(true);
 		add(scrollPane, BorderLayout.CENTER);
 		

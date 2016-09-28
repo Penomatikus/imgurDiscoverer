@@ -51,6 +51,7 @@ public class Downloader extends Thread {
 						tmp.add(new ImageData(String.valueOf(hash)));
 				    else 
 						tmp.add(downloadImage(urlValidator.getImageURL()));
+					
 					manager.process(tmp); 
 				}
 			} catch (Exception e) {

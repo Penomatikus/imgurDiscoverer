@@ -10,6 +10,7 @@ import javax.swing.SwingWorker;
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
+import imgurDiscoverer.backend.time.Stopwatch;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
 import imgurDiscoverer.frontent.componets.InformationPanel;
@@ -75,7 +76,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 * Indicates if >> a << {@link DownloadManager} is running
 	 */
 	private static volatile boolean isRunning;
-	
+		
 	/**
 	 * Class providing an object to manage a bunch of {@link Downloader}s working
 	 * in the background, while the the EDT "will not be interrupted" ( this works, 
@@ -119,6 +120,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 		this.imageBoxArea = imageBoxArea;
 		this.bar = InformationPanel.getBar();
 		this.settings = Settings.createSettings();
+		Stopwatch.createStopwatch();
 		prepareBar();
 	}
 	
@@ -140,6 +142,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 			System.out.println("[ DownloadManager ] Start downloaders.");
 			startDownloaders();
 			System.out.println(settings.toStaticString());
+			Stopwatch.go();
 			while ( isRunning ); // wait until some one will change declaration "isRunning" 
 			System.out.println("[ DownloadManager ] Stop downloaders.");
 			stopDownloaders();
@@ -151,18 +154,21 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected void process(List<ImageData> chunks) {
-		for ( ImageData data : chunks ) {
-			imageBoxArea.addBox(new ImageBox(data));
-			ProgramMonitor.addDownloadedMegabyteAtRuntime(data.getFileSize());
-			int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
-			int max = settings.getProgramSettings().getMaxMegabyte();
-			bar.setValue(barValue);
-			String barString = new DecimalFormat("####0.00").format(barValue) + " mb / "	+ max + " mb";
-			bar.setString(barString);
-			if ( barValue > max ) {
-				DownloadManager.isRunning = false;
-				bar.setString(barString + " ( letting downloaders work to end ");
+		if ( Stopwatch.isDone() ) {			
+			for ( ImageData data : chunks ) {
+				imageBoxArea.addBox(new ImageBox(data));
+				ProgramMonitor.addDownloadedMegabyteAtRuntime(data.getFileSize());
+				int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
+				int max = settings.getProgramSettings().getMaxMegabyte();
+				bar.setValue(barValue);
+				String barString = new DecimalFormat("####0.00").format(barValue) + " mb / "	+ max + " mb";
+				bar.setString(barString);
+				if ( barValue > max ) {
+					DownloadManager.isRunning = false;
+					bar.setString(barString + " ( letting downloaders work to end ");
+				}
 			}
+			Stopwatch.go();
 		}
 	}
 	
