@@ -3,6 +3,9 @@ package imgurDiscoverer.backend.net;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+
 
 /**
  * Provides an object, with the purpose to verify if an certain
@@ -28,7 +31,7 @@ public class URLValidator {
 	/**
 	 * The imgur link as String
 	 */
-	private static final String IMAGE_URL = "https://imgur.com/";
+	private static final String IMAGE_URL = "https://i.imgur.com/";
 	
 	/**
 	 * The {@link URL} to connect with, looking for an image
@@ -47,7 +50,6 @@ public class URLValidator {
 		int statusCode = 0;
 		try {
 			url = new URL(IMAGE_URL + String.valueOf(hash));
-			HttpURLConnection.setFollowRedirects(false);
 			HttpURLConnection con = (HttpURLConnection ) url.openConnection();
 			statusCode = con.getResponseCode();
 		} catch (Exception e) {
@@ -59,8 +61,19 @@ public class URLValidator {
 	/**
 	 * @return {@link URLValidator#url}
 	 */
-	public URL getImageURL() {
-		return url;
+	public URL getImageURL() throws NullPointerException  {
+		Element element = null;
+		URL directURL = null;
+		try {
+			element = Jsoup.parse(url, 3000).getElementsByAttributeValue("rel", "image_src").first();
+			if ( element != null )
+				directURL = new URL(element.attr("href").toString());
+			else
+				throw new NullPointerException("There was no Element for image source at: " + url.toString());
+		} catch (Exception e) {
+			System.err.println("[Downloader] Could not receive direct image link");
+		}
+		return directURL;
 	}
 
 }

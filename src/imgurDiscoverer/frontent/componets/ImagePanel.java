@@ -6,16 +6,17 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 
 
 /**
@@ -166,6 +167,7 @@ public class ImagePanel extends JPanel {
 		this(x_cord, y_cord);
 		this.imageUrl = imageUrl;
 		replaceImage(imageUrl);
+		add(new JLabel(new ImageIcon(imageUrl)));
 	}
 	
 	/**
@@ -178,26 +180,50 @@ public class ImagePanel extends JPanel {
 	public ImagePanel(BufferedImage bufferedImage, int x_cord, int y_cord) {
 		this(x_cord, y_cord);
 		replaceImage(bufferedImage);
+//		WeakReference<Image> reference = new WeakReference<Image>(image);
+//		image = null;
+		JPanel pane = new JPanel() {
+			@Override
+			public void setBounds(int x, int y, int width, int height) {
+				super.setBounds(0, 0, 220, 220);
+			}
+			
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 0, 0, image.getWidth(null), image.getWidth(null), this);
+            }
+        };
+        add(pane);
 	}
 	
-	@Override
-	protected void paintComponent(Graphics g) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-			
-//			From lamacore. not needed here
-//			if ( rotate )
-//				g2d.setPaint(Utils.defaultSystemColor());
-//			else
-//				
-				g2d.setPaint(new Color(0,0,0,0));				
-			g2d.fill(new Rectangle2D.Double(0, 0, width, height));
-			g2d.translate(transX,transY); // Translate the center of our coordinates.
-	        g2d.rotate(Math.toRadians(tmpDegree));  // Rotate the image by degree
-	        g2d.drawImage(image, 0, 0, image.getWidth(null), image.getHeight(null), this);
-		
+	public void release(){
+//		Stopwatch stopwatch = new Stopwatch(3);
+//		stopwatch.go();
+//		while ( !stopwatch.isDone() );
+//        image.flush();	
+//        image = null;
 	}
+//	
+//	@Override
+//	protected void paintComponent(Graphics g) {
+//		super.paintComponent(g);
+//		g.drawImage(image, 0, 0, null);
+//		Graphics2D g2d = (Graphics2D)g;
+//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+//			
+////			From lamacore. not needed here
+////			if ( rotate )
+////				g2d.setPaint(Utils.defaultSystemColor());
+////			else
+////				
+//		g2d.setPaint(new Color(0,0,0,0));				
+//		g2d.fill(new Rectangle2D.Double(0, 0, width, height));
+//		g2d.translate(transX,transY); // Translate the center of our coordinates.
+//	    g2d.rotate(Math.toRadians(tmpDegree));  // Rotate the image by degree
+//	    g2d.drawImage(image, 0, 0, image.getWidth(null), image.getHeight(null), this);
+//	    g.dispose();
+//	}
 	//(degree*(image.getWidth(null)*0.5)/45.0)
 	
 	/**

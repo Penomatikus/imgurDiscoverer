@@ -34,6 +34,7 @@ public class ProgramWindow extends JFrame implements Window {
 		setLocation(xLoc, yLoc);
 		initComponents();
 		setVisible(true);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 	}
@@ -47,6 +48,7 @@ public class ProgramWindow extends JFrame implements Window {
 		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		scrollPane.setDoubleBuffered(true);
 		add(scrollPane, BorderLayout.CENTER);
+		ImageBoxArea.addParent(scrollPane);
 		
 		add(new ControlPanel(imageBoxArea), BorderLayout.PAGE_START);
 		

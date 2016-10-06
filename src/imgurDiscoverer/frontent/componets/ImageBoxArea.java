@@ -3,12 +3,16 @@ package imgurDiscoverer.frontent.componets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 import imgurDiscoverer.backend.logic.Singleton;
 
@@ -43,6 +47,8 @@ public class ImageBoxArea extends JPanel implements Singleton {
 	 */
 	private List<RowPanel> rows;
 	private static ImageBoxArea self;
+	private static volatile JScrollPane parent;
+	private Rectangle init = new Rectangle(0, 0, 100, ImageBox.HEIGHT);
 
 	/**
 	 * Provides an object, which holds all {@link ImageBox}es. Those
@@ -79,6 +85,13 @@ public class ImageBoxArea extends JPanel implements Singleton {
 		return ( self == null ) ? self = new ImageBoxArea(xCord, yCord, width, height) : self;
 	}
 	
+	public static void addParent(JScrollPane parent) {
+		ImageBoxArea.parent = parent;
+	}
+	
+	public static synchronized JScrollPane getParentPane(){
+		return parent;
+	}
 	/**
 	 * Initiates the lists...
 	 */
@@ -96,26 +109,42 @@ public class ImageBoxArea extends JPanel implements Singleton {
 	 * @param box	The {@link ImageBox} to add
 	 */
 	public void addBox(ImageBox box){
+//		WeakReference<ImageBox> boxReference = new WeakReference<ImageBox>(box);
+//		box = null;
 		// For the spacing between each imagebox
 		JPanel space = new JPanel();
 		space.setBackground(new Color(20, 21, 24));
 		space.setSize(new Dimension(10, 10));
 		
 		if ( ( boxes.size() % 4 ) == 0 ){			// do we have more than 4 imageboxes in the current line?
-			RowPanel row = new RowPanel(this);		// create new row
+			RowPanel row = new RowPanel(this, init);	// create new row
 			row.add(box);							// add new imagebox to that row
 			boxes.add(box);							// add new imagebox to the box list
 			rows.add(row);							// add created row to the row list
 			rows.get(rows.size()-1).add(space);		// add the space panel to the created row
 			add(row);								// add row to the imagebox-area
+//			if ( test(row) ) {
+//				revalidate();
+//				repaint();
+//			}
+			init.setBounds(0, (int) init.getY() + ImageBox.HEIGHT + 10, 100, ImageBox.HEIGHT);
 		} else {
 			boxes.add(box);							
 			rows.get(rows.size() - 1).add(box);
 			rows.get(rows.size() - 1).add(space);
 		}
 		
-		revalidate();
-		repaint();
+		
+	}
+	
+	private boolean test(RowPanel row) {
+		JViewport viewport = parent.getViewport();
+		Rectangle one = viewport.getViewRect();
+		Rectangle two = row.getViewPort();
+		if ( one.intersects(two) )
+			return true;
+		else
+			return false;
 	}
 		
 	/**
@@ -153,6 +182,10 @@ public class ImageBoxArea extends JPanel implements Singleton {
 		 *  The {@link ImageBoxArea} object 
 		 */
 		private ImageBoxArea parent;
+		/**
+		 * The view rectangle
+		 */
+		private Rectangle viewport;
 		
 		/**
 		 * Provides a {@link JPanel}  using a {@link BoxLayout}  ( with X axis arrangement )
@@ -165,18 +198,23 @@ public class ImageBoxArea extends JPanel implements Singleton {
 		 * </pre>
 		 * @param parent the {@link ImageBoxArea} object 
 		 */
-		public RowPanel(ImageBoxArea parent) {
+		public RowPanel(ImageBoxArea parent, Rectangle viewport) {
 			setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
 			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			setBackground(new Color(20, 21, 24));
-			setDoubleBuffered(true);
+			//setDoubleBuffered(true);
 			this.parent = parent;
+			this.viewport = viewport;
 		}
 		
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			setMaximumSize(new Dimension(parent.getWidth(), ImageBox.HEIGHT));
+		}
+		
+		public Rectangle getViewPort(){
+			return viewport;
 		}
 	}
 

@@ -1,6 +1,7 @@
 package imgurDiscoverer.frontent.frameextra;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,7 @@ import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
+import imgurDiscoverer.frontent.componets.InformationPanel;
 import imgurDiscoverer.frontent.componets.IntelligentTextfield;
 
 public class SettingsWindow extends JFrame implements Window {
@@ -34,7 +36,6 @@ public class SettingsWindow extends JFrame implements Window {
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
 	private JCheckBox saveNotFound;
-	private JCheckBox forceQuit;
 	private JLabel saveImagePath;
 	private JLabel saveHashDes;
 	private JLabel saveImageDes;
@@ -42,7 +43,6 @@ public class SettingsWindow extends JFrame implements Window {
 	private IntelligentTextfield maxDownload;
 	private JButton ok;
 	private JButton abort;
-	private JButton previous;
 	private JButton defaults;
 	private JButton changeDic1;
 	private JButton changeDic2;
@@ -79,7 +79,7 @@ public class SettingsWindow extends JFrame implements Window {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		settings = Settings.createSettings();
 		parent = this;
-		setSize(400, 580);
+		setSize(400, 540);
 		double[] display = Utils.displaySize();
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
@@ -93,22 +93,26 @@ public class SettingsWindow extends JFrame implements Window {
 	
 	@Override
 	public void initComponents() {
-		Font font = new Font("SansSerif", Font.BOLD, 15);
+		Font font = Utils.defaultFontBold(15);
+		Font font2 = Utils.defaultFontPlain(15);
 		
 		container = new JPanel();
 		container.setLayout(null);
 		container.setBounds(0, 0, 400, 580);
-		container.setBackground(new Color(52, 55, 60 ));
+		container.setBackground(Utils.colorImgurDarkGrey());
 		add(container);
 		
-		container.add(new ImagePanel(ResourceImage.settingsHeader, 80, 0));
+		JPanel header = new JPanel();
+		header.setSize(new Dimension(400, 80));
+		header.setBackground(Utils.colorImgurLightGrey());
+		header.add(new ImagePanel(ResourceImage.settingsHeader, 80, 0));
+		container.add(header);
 		
-		Font font2 = new Font("SansSerif", Font.PLAIN, 15);
 		Border border = BorderFactory.createTitledBorder(null, "Advanced", TitledBorder.LEFT, TitledBorder.TOP, font2, Utils.colorImgurGreen());
 		JPanel advanced = new JPanel(null);
 		advanced.setBorder(border);
 		advanced.setBounds(5, 100, 390, 90);
-		advanced.setBackground(Utils.colorImgurLightGrey());
+		advanced.setBackground(Utils.colorImgurDarkGrey());
 		container.add(advanced);
 		
 		threadBoxDescription = new JLabel("Choose the amount of threads");
@@ -118,7 +122,7 @@ public class SettingsWindow extends JFrame implements Window {
 		threadBoxDescription.setVerticalAlignment(SwingConstants.CENTER);
 		threadBoxDescription.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		threadBoxDescription.setVisible(true);
-		threadBoxDescription.setForeground(Utils.colorImgurDarkGrey());
+		threadBoxDescription.setForeground(Utils.colorImgurWhite());
 		advanced.add(threadBoxDescription);
 		
 		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 64, 128});
@@ -134,7 +138,7 @@ public class SettingsWindow extends JFrame implements Window {
 		maxDownloadDescription.setVerticalAlignment(SwingConstants.CENTER);
 		maxDownloadDescription.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		maxDownloadDescription.setVisible(true);
-		maxDownloadDescription.setForeground(Utils.colorImgurDarkGrey());
+		maxDownloadDescription.setForeground(Utils.colorImgurWhite());
 		advanced.add(maxDownloadDescription);
 		
 		maxDownload = new IntelligentTextfield(280, 53, 100, 25);
@@ -145,7 +149,7 @@ public class SettingsWindow extends JFrame implements Window {
 		JPanel directories = new JPanel(null);
 		directories.setBorder(border2);
 		directories.setBounds(5, 200, 390, 160);
-		directories.setBackground(Utils.colorImgurLightGrey());
+		directories.setBackground(Utils.colorImgurDarkGrey());
 		container.add(directories);
 		
 		saveFound = new JCheckBox("Save hashes of the found images");
@@ -153,7 +157,7 @@ public class SettingsWindow extends JFrame implements Window {
 		saveFound.setSelected(settings.getProgramSettings().isSaveFoundHashes());
 		saveFound.setBounds(5, 19, 375, 30);
 		saveFound.setFont(font);
-		saveFound.setForeground(Utils.colorImgurDarkGrey());
+		saveFound.setForeground(Utils.colorImgurWhite());
 		directories.add(saveFound);
 		
 		saveNotFound = new JCheckBox("Save hashes which result in no image");
@@ -161,7 +165,7 @@ public class SettingsWindow extends JFrame implements Window {
 		saveNotFound.setSelected(settings.getProgramSettings().isSaveNotFoundHashes());
 		saveNotFound.setBounds(5, 49, 375, 30);
 		saveNotFound.setFont(font);
-		saveNotFound.setForeground(Utils.colorImgurDarkGrey());
+		saveNotFound.setForeground(Utils.colorImgurWhite());
 		directories.add(saveNotFound); 
 		
 		changeDic1 = new JButton(new ImageIcon(ResourceImage.dic));
@@ -174,14 +178,14 @@ public class SettingsWindow extends JFrame implements Window {
 		saveHashDes.setBounds(50, 74, 375, 30);
 		saveHashDes.setFont(font);
 		saveHashDes.setToolTipText(dic1);
-		saveHashDes.setForeground(Utils.colorImgurDarkGrey());
+		saveHashDes.setForeground(Utils.colorImgurWhite());
 		directories.add(saveHashDes);
 		
 		saveImagePath = new JLabel("The current path to safe images:");
 		saveImagePath.setToolTipText("Does not download found images, but tells you if they exists.");
 		saveImagePath.setBounds(10, 99, 375, 30);
 		saveImagePath.setFont(font);
-		saveImagePath.setForeground(Utils.colorImgurDarkGrey());
+		saveImagePath.setForeground(Utils.colorImgurWhite());
 		directories.add(saveImagePath);
 		
 		changeDic2 = new JButton(new ImageIcon(ResourceImage.dic));
@@ -194,14 +198,14 @@ public class SettingsWindow extends JFrame implements Window {
 		saveImageDes.setBounds(50, 124, 375, 30);
 		saveImageDes.setFont(font);
 		saveImageDes.setToolTipText(dic2);
-		saveImageDes.setForeground(Utils.colorImgurDarkGrey());
+		saveImageDes.setForeground(Utils.colorImgurWhite());
 		directories.add(saveImageDes);
 		
 		Border border3 = BorderFactory.createTitledBorder(null, "Download management", TitledBorder.LEFT, TitledBorder.TOP, font2, Utils.colorImgurGreen());
 		JPanel download = new JPanel(null);
 		download.setBorder(border3);
-		download.setBounds(5, 370, 390, 85);
-		download.setBackground(Utils.colorImgurLightGrey());
+		download.setBounds(5, 370, 390, 55);
+		download.setBackground(Utils.colorImgurDarkGrey());
 		container.add(download);
 		
 		onlyCheckNotDownload = new JCheckBox("Only check if image exists.");
@@ -209,40 +213,26 @@ public class SettingsWindow extends JFrame implements Window {
 		onlyCheckNotDownload.setSelected(settings.getProgramSettings().isDownloadAllowed());
 		onlyCheckNotDownload.setBounds(5, 19, 375, 30);
 		onlyCheckNotDownload.setFont(font);
-		onlyCheckNotDownload.setForeground(Utils.colorImgurDarkGrey());
+		onlyCheckNotDownload.setForeground(Utils.colorImgurWhite());
 		download.add(onlyCheckNotDownload);
-		
-		forceQuit = new JCheckBox("Force downloaders to stop when cancelled");
-		forceQuit.setToolTipText("Forces downloaders to stop immediately when cancelled ( may results in image damages ) ");
-		forceQuit.setSelected(settings.getProgramSettings().isDownloadAllowed());
-		forceQuit.setBounds(5, 49, 375, 30);
-		forceQuit.setFont(font);
-		forceQuit.setForeground(Utils.colorImgurDarkGrey());
-		download.add(forceQuit);
 		
 		ok = new JButton("OK");
 		ok.setToolTipText("Use the current settings and close the window");
-		ok.setBounds(5, 480, 190, 30);
+		ok.setBounds(5, 440, 190, 30);
 		ok.setFont(font);
 		container.add(ok);
 		
 		abort = new JButton("Abort");
 		abort.setToolTipText("Closes the window and dont use the new settings");
-		abort.setBounds(200, 480, 190, 30);
+		abort.setBounds(200, 440, 190, 30);
 		abort.setFont(font);
 		container.add(abort);
 		
 		defaults = new JButton("Restore defaults");
 		defaults.setToolTipText("Restores the settings to the default imgur discoverer settings");
-		defaults.setBounds(5, 520, 190, 30);
+		defaults.setBounds(5, 480, 390, 30);
 		defaults.setFont(font);
 		container.add(defaults);
-		
-		previous = new JButton("Previous settings");
-		previous.setToolTipText("Changes the settings to the previously used ones");
-		previous.setBounds(200, 520, 190, 30);
-		previous.setFont(font);
-		container.add(previous);
 			
 	}
 
@@ -258,7 +248,9 @@ public class SettingsWindow extends JFrame implements Window {
 				settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
 				settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
 				settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
-				settings.getProgramSettings().setMaxMegabyte(Integer.parseInt(maxDownload.getText()));
+				Integer i = Integer.parseInt(maxDownload.getText());
+				InformationPanel.getBar().setString("0.0 mb / "	+ i + " mb");
+				settings.getProgramSettings().setMaxMegabyte(i);
 				System.out.println(settings.toStaticString());
 				settings.createSettingsFile();
 				dispose();
@@ -273,12 +265,31 @@ public class SettingsWindow extends JFrame implements Window {
 		});
 		
 		defaults.addActionListener( (e) -> {
-			System.out.println("defaults");
+			if ( !ProgramMonitor.isDownloadersAreRunning() ) {
+				threadBox.setSelectedIndex(2);
+				settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
+				
+				saveFound.setSelected(true);
+				settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
+				
+				saveNotFound.setSelected(false);
+				settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
+				
+				onlyCheckNotDownload.setSelected(false);
+				settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
+				
+				int i = 5000;
+				InformationPanel.getBar().setString("0.0 mb / "	+ i + " mb");
+				settings.getProgramSettings().setMaxMegabyte(i);
+				
+				System.out.println(settings.toStaticString());
+			} else {
+				JOptionPane.showMessageDialog(parent, 
+						"Can't apply settings while download is in process.");
+			} 
+				
 		});
 		
-		previous.addActionListener( (e) -> {
-			System.out.println("previous");
-		});	
 	}
 	
 }

@@ -5,11 +5,17 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -28,12 +34,12 @@ public class ControlPanel extends JPanel {
 	private ImagePanel imagePanel;
 	private JButton start;
 	private JButton stop;
-	private JButton load;
-	private JButton save;
 	private JButton settings;
+	private JButton save;
 	private List<ImageBox> imageBoxs;
 	private ImageBoxArea imageBoxArea;
 	private ControlPanel parent;
+	private String newDest; 
 	
 	public ControlPanel(ImageBoxArea imageBoxArea) {
 		this.imageBoxArea = imageBoxArea;
@@ -43,7 +49,7 @@ public class ControlPanel extends JPanel {
 		setBackground(Utils.colorImgurLightGrey());
 		setSize(new Dimension(1000, 400));
 		setLayout(new GridBagLayout());
-		setDoubleBuffered(true);
+		//setDoubleBuffered(true);
 		createLayout();
 		initComponets();
 		createActionListeners();
@@ -76,11 +82,6 @@ public class ControlPanel extends JPanel {
 		constraints.gridx++;
 		buttons.add(stop, constraints);
 		
-		settings = new JButton(new ImageIcon(ResourceImage.settings));
-		settings.setPreferredSize(buttonSize);
-		constraints.gridx++;
-		buttons.add(settings, constraints);
-		
 		constraints.insets = new Insets(5, 15, 5, 5);
 		save = new JButton(new ImageIcon(ResourceImage.save));
 		save.setPreferredSize(buttonSize);
@@ -89,10 +90,10 @@ public class ControlPanel extends JPanel {
 		buttons.add(save, constraints);
 		
 		constraints.insets = new Insets(5, 5, 5, 5);
-		load = new JButton(new ImageIcon(ResourceImage.load));
-		load.setPreferredSize(buttonSize);
+		settings = new JButton(new ImageIcon(ResourceImage.settings));
+		settings.setPreferredSize(buttonSize);
 		constraints.gridx++;
-		buttons.add(load, constraints);
+		buttons.add(settings, constraints);
 	}
 	
 	private void createActionListeners(){
@@ -105,18 +106,23 @@ public class ControlPanel extends JPanel {
 		});
 		
 		stop.addActionListener((e) -> {
-			DownloadManager.cancelDownloadProcess();
+			if ( ProgramMonitor.isDownloadersAreRunning() ) 
+				DownloadManager.cancelDownloadProcess();
+			else 
+				JOptionPane.showMessageDialog(parent,
+						"No download progress is running");
 		});
 		
 		save.addActionListener((e) -> {
-			for ( ImageBox ib : imageBoxs )
-				if ( ib.isSelected ) 
-					System.out.println(ib.getResourceName());
-	
-		});
-		
-		load.addActionListener((e) -> {
-	
+			if ( imageBoxs.size() == 0 )
+				JOptionPane.showMessageDialog(parent,
+						"You have to select one or more images first.");
+			else {
+				newDest = askForNewPath();
+				copyFiles();
+			}
+				
+			
 		});
 		
 		settings.addActionListener((e) -> {
@@ -124,6 +130,31 @@ public class ControlPanel extends JPanel {
 				new SettingsWindow();
 			});
 		});
-
+	}
+	
+	private String askForNewPath(){
+		JFileChooser chooser = new JFileChooser(); 
+	    chooser.setAcceptAllFileFilterUsed(false);
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setDialogTitle("Where would you like to copy to?");
+	    File newPath = null;
+	    if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+	    	newPath = chooser.getSelectedFile();
+	    }
+	    return newPath.getAbsolutePath();		
+	}
+	
+	private void copyFiles(){
+		try {
+			for ( ImageBox ib : imageBoxs ) {
+				if ( ib.isSelected ) {
+					Path dest = Paths.get(newDest + ib.getResourceName().getFileNameWithExtension(true));
+					Path source = Paths.get(ib.getResourceName().getFileLocationAtDownloadTime());
+					Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

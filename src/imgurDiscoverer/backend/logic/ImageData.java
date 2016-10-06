@@ -1,6 +1,9 @@
 package imgurDiscoverer.backend.logic;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+
+import imgurDiscoverer.backend.settings.Settings;
 
 /**
  * Provides an object for holding image information. <br>
@@ -35,6 +38,10 @@ public final class ImageData {
 	 * The file size of the image
 	 */
 	private double fileSize;
+	/**
+	 * The location of the image at download time
+	 */
+	private String fileLocationAtDownloadTime;
 	
 	/**
 	  * Provides an object for holding image information. <br>
@@ -57,6 +64,9 @@ public final class ImageData {
 		this.fileSize = fileSize;
 		this.name = name;
 		this.extension = extension; 
+		Settings s = Settings.createSettings();
+		fileLocationAtDownloadTime = s.getDirectorySettings().getPathForImages().getAbsolutePath() + 
+				File.separator + name + "." + extension;
 	}
 	
 	/**
@@ -111,5 +121,32 @@ public final class ImageData {
 	 */
 	public void setFileSize(double size){
 		this.fileSize = size;
+	}
+	
+	/**
+	 * @return {@link ImageData#fileLocationAtDownloadTime}
+	 */
+	public String getFileLocationAtDownloadTime(){
+		return fileLocationAtDownloadTime;
+	}
+	
+	/**
+	 * Returns "/filename.jpg" or just "filename.jpg"
+	 * @param andWithSeperator indicates if "/" should be added
+	 * @return "/filename.jpg" or just "filename.jpg"
+	 */
+	public String getFileNameWithExtension(boolean andWithSeperator){
+		String name = this.name + "." + extension;
+		return ( andWithSeperator ) ? File.separator + name : name;
+	}
+	
+	public void release(){
+		System.out.println("[ImageData] release memory in heap.");
+		try {
+			imageData.flush();
+			imageData = null;
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,10 +1,9 @@
 package imgurDiscoverer.backend.view;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-
-import imgurDiscoverer.frontent.componets.ImageBox;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 
 public class ImageDownScaler {
 
@@ -18,13 +17,27 @@ public class ImageDownScaler {
 	}
 	
 	public BufferedImage downScale(){
-		Image tmp = bufferedImage.getScaledInstance(ImageBox.WIDTH - 10, 
-				ImageBox.WIDTH - 10, Image.SCALE_FAST);
-		BufferedImage resiszed = new BufferedImage(tmp.getWidth(null), 
-				tmp.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics2d = resiszed.createGraphics();
-		graphics2d.drawImage(tmp, 0, 0, null);
-		graphics2d.dispose();
-		return resiszed;
+		WeakReference<BufferedImage> reference = new WeakReference<BufferedImage>(this.bufferedImage);
+		this.bufferedImage = null;
+		
+		BufferedImage thumbnail = new BufferedImage(220, 220,
+                BufferedImage.TYPE_INT_ARGB);
+		SoftReference<BufferedImage> referenceThumb = new SoftReference<BufferedImage>(thumbnail);
+		thumbnail = null;
+		
+        Graphics2D g = referenceThumb.get().createGraphics();
+        g.drawImage(reference.get(), 0, 0, 220, 220, null);
+        try {  reference.get().flush(); }
+        catch (Exception e ) { ; }
+        g.dispose();
+        return referenceThumb.get();
+	}
+	
+	public void release(){
+		try {
+			finalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 }

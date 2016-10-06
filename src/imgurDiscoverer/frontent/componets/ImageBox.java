@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,6 @@ import javax.swing.border.EmptyBorder;
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
-import imgurDiscoverer.backend.view.ImageDownScaler;
 import imgurDiscoverer.frontent.frameextra.PreviewWindow;
 
 /**
@@ -45,6 +45,7 @@ import imgurDiscoverer.frontent.frameextra.PreviewWindow;
 public class ImageBox extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+	private static final URL okay = ResourceImage.selected;
 	public static final int WIDTH = 230;
 	public static final int HEIGHT = 230;
 	public ImageData resource;
@@ -54,19 +55,21 @@ public class ImageBox extends JPanel {
 	private MouseAdapter mouseAdapter;
 	private ImagePanel selected;
 	private Color background;
-	ImagePanel imagePanel;
 	
 	public ImageBox(ImageData resource) {
 		this.resource = resource;
 		this.isSelected = false;
-		
+	
 		setBorder(BorderFactory.createDashedBorder(Color.GRAY, 2.0f, 1.8f, 1.2f, true));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setBackground(background = mostCommonColor());
+		if ( resource.getImageData() != null )
+			setBackground(background = mostCommonColor());
+		else
+			setBackground(background = Utils.colorImgurDarkGrey()); 
 		setLayout(new BorderLayout());
-		setDoubleBuffered(true);
 		initMouseAdapter();
 		initComponents();
+		flushImageMemory();
 	}
 	
 	private void initMouseAdapter(){
@@ -104,10 +107,11 @@ public class ImageBox extends JPanel {
 		content.setBackground(new Color(0, 0, 0, 0));
 		add(content, BorderLayout.CENTER);
 		
-		imagePanel = new ImagePanel(new ImageDownScaler(
-				resource.getImageData()).downScale(), 0, 0);
-		//imagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		content.add(imagePanel);
+		if ( resource.getImageData() != null ) {
+			ImagePanel panel = new ImagePanel(resource.getImageData(), 0, 0);
+			content.add(panel);
+			panel.release();
+		}
 
 		
 		descriptionPanel = new JPanel(new FlowLayout());
@@ -127,9 +131,14 @@ public class ImageBox extends JPanel {
 		descriptionPanel.validate();
 		descriptionPanel.repaint();
 		
-		selected = new ImagePanel(ResourceImage.selected, 0, 0);
+		selected = new ImagePanel(ImageBox.okay, 0, 0);
 		selected.setVisible(false);
 		add(selected, BorderLayout.EAST, 0);
+	}
+	
+	private void flushImageMemory(){
+		resource.release();
+		resource = null;
 	}
 	
 	/**
@@ -137,7 +146,7 @@ public class ImageBox extends JPanel {
 	 * @return
 	 */
 	private Color mostCommonColor(){
-		BufferedImage image = resource.getImageData();
+		 BufferedImage image = resource.getImageData();
 		 Map<Color, Integer> colorMap = new HashMap<Color, Integer>();
 		 int x = image.getWidth(); 
 		 int y = image.getHeight();
@@ -178,9 +187,4 @@ public class ImageBox extends JPanel {
 	public boolean isSelected(){
 		return isSelected;
 	}
-	
-	
-	
-	
-
 }

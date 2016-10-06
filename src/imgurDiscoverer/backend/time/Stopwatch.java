@@ -7,19 +7,19 @@ public class Stopwatch {
 	
 	private static volatile int timeInSeconds;
 	private static volatile boolean isDone;
-	private static volatile Stopwatch self;
+//	private static volatile Stopwatch self;
 	private static volatile  boolean running;
 	
-	private Stopwatch(int timeInSeconds) {
+	public Stopwatch(int timeInSeconds) {
 		Stopwatch.timeInSeconds = timeInSeconds;
 		Stopwatch.running = false;
 	}
+//	
+//	public static synchronized Stopwatch createStopwatch(){
+//		return ( self == null ) ? self = new Stopwatch(5): self;
+//	}
 	
-	public static synchronized Stopwatch createStopwatch(){
-		return ( self == null ) ? self = new Stopwatch(5): self;
-	}
-	
-	public static synchronized void go(){
+	public void go(){
 		if ( !running ) {
 			Stopwatch.running = true;
 			Timer timer = new Timer();
@@ -37,7 +37,7 @@ public class Stopwatch {
 		}
 	}
 	
-	public static synchronized boolean isDone(){
+	public boolean isDone(){
 		return isDone;
 	}
 

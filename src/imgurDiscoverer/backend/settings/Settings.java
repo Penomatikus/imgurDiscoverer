@@ -69,16 +69,18 @@ public class Settings implements Serializable, Singleton {
 	}
 	
 	public static void readSettingsFile(){
-		Settings settings = null;
+		boolean found = false;
 		try {
 			FileInputStream fis = new FileInputStream("settings");
 			ObjectInputStream ois = new ObjectInputStream(fis);
-			settings = (Settings) ois.readObject();
+			self = (Settings) ois.readObject();
 			ois.close();
+			found = true;
 		} catch (IOException | ClassNotFoundException e) {
-			System.err.println("[ Settings ] \".settings\" file not found.");
+			System.err.println("[ Settings ] No previous used \".settings\" file found.");
 		}
-		self = settings;
+		if ( !found )
+			self = new Settings();
 		createDirIfNotExist();
 	}
 	
@@ -110,7 +112,6 @@ public class Settings implements Serializable, Singleton {
 				"Save hashes of found images: " + getProgramSettings().isSaveFoundHashes() + "\n" +
 				"Save hashes of not found images; " + getProgramSettings().isSaveNotFoundHashes() + "\n" +
 				"Only check if exist: " + getProgramSettings().isDownloadAllowed() + "\n\n";
-			
 	}
 
 }

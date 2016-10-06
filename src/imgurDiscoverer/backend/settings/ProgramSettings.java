@@ -21,9 +21,6 @@ import imgurDiscoverer.frontent.frameextra.SettingsWindow;
  */
 public class ProgramSettings implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The amount of threads to use
@@ -44,7 +41,7 @@ public class ProgramSettings implements Serializable {
 	/**
 	 * If the program only check if hash is correct
 	 */
-	private boolean allowDownload;
+	private boolean notAllowDownload;
 	/**
 	 * The maximum amount of MB to download
 	 */
@@ -59,11 +56,11 @@ public class ProgramSettings implements Serializable {
 	 * <li> If the program only check if hash is correct
 	 */
 	public ProgramSettings() {
-		threads = 4;
-		threadIndex = 1;
+		threads = 8;
+		threadIndex = 2;
 		saveFoundHashes = true;
-		saveNotFoundHashes = true;
-		allowDownload = true;
+		saveNotFoundHashes = false;
+		notAllowDownload = false;
 		setMaxMegabyte(5000);
 	}
 	
@@ -130,13 +127,13 @@ public class ProgramSettings implements Serializable {
 	 * @return the onlyDownload
 	 */
 	public boolean isDownloadAllowed() {
-		return allowDownload;
+		return notAllowDownload;
 	}
 	/**
 	 * @param onlyDownload the onlyDownload to set
 	 */
 	public void setIsDownloadAllowed(boolean allowDownload) {
-		this.allowDownload = allowDownload;
+		this.notAllowDownload = allowDownload;
 	}
 
 	public int getMaxMegabyte() {

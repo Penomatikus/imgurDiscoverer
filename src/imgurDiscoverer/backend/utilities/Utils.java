@@ -3,6 +3,7 @@ package imgurDiscoverer.backend.utilities;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URI;
@@ -74,6 +75,14 @@ public class Utils {
 		}
 	}
 	
+	public static Font defaultFontPlain(int size){
+		return new Font("SansSerif", Font.PLAIN, size);
+	}
+	
+	public static Font defaultFontBold(int size){
+		return new Font("SansSerif", Font.BOLD, size);
+	}	
+	
 	public static Color colorImgurGreen(){
 		return new Color(57, 196, 66);
 	}
@@ -84,6 +93,10 @@ public class Utils {
 	
 	public static Color colorImgurLightGrey(){
 		return new Color(52, 55, 60);
+	}
+	
+	public static Color colorImgurWhite(){
+		return new Color(255, 255, 255);
 	}
 	
 	

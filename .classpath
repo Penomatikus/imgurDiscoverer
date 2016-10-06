@@ -8,5 +8,10 @@
 			<attribute name="javadoc_location" value="jar:file:/home/stefan/Dropbox/klassen/jsoup-1.9.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

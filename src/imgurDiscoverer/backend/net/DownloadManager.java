@@ -4,13 +4,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
-import imgurDiscoverer.backend.time.Stopwatch;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
 import imgurDiscoverer.frontent.componets.InformationPanel;
@@ -76,7 +76,19 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 * Indicates if >> a << {@link DownloadManager} is running
 	 */
 	private static volatile boolean isRunning;
-		
+	/**
+	 * Indicates the number of total images
+	 */
+	private static int totalNumber;
+	/**
+	 * Shows current task of the download manager
+	 */
+	private JLabel currentTask;
+	/**
+	 * Shows the current progressed images
+	 */
+	private JLabel downloadedImages;
+	
 	/**
 	 * Class providing an object to manage a bunch of {@link Downloader}s working
 	 * in the background, while the the EDT "will not be interrupted" ( this works, 
@@ -115,37 +127,47 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 *
 	 * @param imageBoxArea	The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
 	 */
-	public DownloadManager(ImageBoxArea imageBoxArea ) {
+	public DownloadManager(ImageBoxArea imageBoxArea) {
 		this.downloaders = new ArrayList<>();
 		this.imageBoxArea = imageBoxArea;
 		this.bar = InformationPanel.getBar();
+		this.currentTask = InformationPanel.getCurrentTaskDes();
+		this.downloadedImages = InformationPanel.getDownloadedImagesDes();
 		this.settings = Settings.createSettings();
-		Stopwatch.createStopwatch();
-		prepareBar();
+		prepare();
 	}
 	
-	private void prepareBar(){
-		bar.setMinimum(0);
+	/**
+	 * Prepares the {@link DownloadManager#bar} and sets the current minimum to
+	 * the current downloaded megabytes and the maximum to the preferred maximum
+	 * download of megabytes. Moreover, it will change the {@link DownloadManager#downloadedImages}
+	 * to "Images: 0 / 0" if, no images was progressed before.
+	 */
+	private void prepare(){
+		bar.setMinimum((int) ProgramMonitor.getDownloadedMegabyteAtRuntime());
 		bar.setMaximum(settings.getProgramSettings().getMaxMegabyte());
-		bar.setStringPainted(true);
-		bar.setString("0/ " + settings.getProgramSettings().getMaxMegabyte());
+		if ( ProgramMonitor.getAllProgressedFiles() == 0 )
+			updateLabel(downloadedImages, "Images: 0 / 0");
 	}
 	
 	@Override
 	protected Void doInBackground() throws Exception {
-		Settings settings = Settings.createSettings();
 		DownloadManager.isRunning = true;
 		ProgramMonitor.setIsDownloadersAreRunning(true);
 		try {
-			System.out.println("[ DownloadManager ] Prepare downloaders.");
+			int size = settings.getProgramSettings().getThreads();
+			updateLabel(currentTask, "Current task: Prepareing " + size + " downloaders.");
+			Thread.sleep(200);
 			prepareDownloaders();
-			System.out.println("[ DownloadManager ] Start downloaders.");
+			updateLabel(currentTask, "Current task: Starting " + size + " downloaders.");
+			Thread.sleep(200);
 			startDownloaders();
 			System.out.println(settings.toStaticString());
-			Stopwatch.go();
+			updateLabel(currentTask, "Current task: downloading...");
 			while ( isRunning ); // wait until some one will change declaration "isRunning" 
-			System.out.println("[ DownloadManager ] Stop downloaders.");
+			updateLabel(currentTask, "Current task: Waiting for all downloaders to stop. ( No new downloads )");
 			stopDownloaders();
+			while ( ProgramMonitor.getRegisteredDownloaders() != 0 ); // wait for all downloaders to stop
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,29 +176,45 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected void process(List<ImageData> chunks) {
-		if ( Stopwatch.isDone() ) {			
-			for ( ImageData data : chunks ) {
-				imageBoxArea.addBox(new ImageBox(data));
-				ProgramMonitor.addDownloadedMegabyteAtRuntime(data.getFileSize());
-				int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
-				int max = settings.getProgramSettings().getMaxMegabyte();
-				bar.setValue(barValue);
-				String barString = new DecimalFormat("####0.00").format(barValue) + " mb / "	+ max + " mb";
-				bar.setString(barString);
-				if ( barValue > max ) {
-					DownloadManager.isRunning = false;
-					bar.setString(barString + " ( letting downloaders work to end ");
-				}
+		for ( ImageData data : chunks ) {
+			imageBoxArea.addBox(new ImageBox(data));
+			int barValue = (int) ProgramMonitor.getDownloadedMegabyteAtRuntime();
+			int max = settings.getProgramSettings().getMaxMegabyte();
+			bar.setValue(barValue);
+			String barString = new DecimalFormat("####0.00").format(barValue) + " mb / "	+ max + " mb";
+			bar.setString(barString);
+			downloadedImages.setText("Images: " + ++totalNumber + " / " + ProgramMonitor.getAllDownloadedFiles());
+			if ( barValue > max ) {
+				DownloadManager.isRunning = false;
 			}
-			Stopwatch.go();
 		}
+	}
+	
+	/**
+	 * Updates a labels text and its tool tip text with the same string. 
+	 * However, this is not true for {@link DownloadManager#downloadedImages}
+	 * @param label	the label to change its data
+	 * @param text	the new text for the label and its tool tip
+	 */
+	private void updateLabel(JLabel label, String text){
+		label.setText(text);
+		if ( label.hashCode() != downloadedImages.hashCode() )
+			label.setToolTipText(text);
 	}
 	
 	
 	@Override
 	protected void done() {
 		ProgramMonitor.setIsDownloadersAreRunning(false);
-		System.out.println("[ DownloadManager ] I am done.");
+		/**
+		 * Since we assume, the program was running a long time and
+		 * the user will restart searching for images. It would be nice
+		 * to give the gc a hint, to perform its work. I know this
+		 * is not good practice, however there is this nasty bufferedimage
+		 * data behavior to flood the memory, so we should do this action.
+		 */
+		System.gc(); 		
+		updateLabel(currentTask, "Current task: none");
 	}
 	
 	/**
@@ -186,8 +224,10 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	private void prepareDownloaders() {
 		Settings settings = Settings.createSettings();
 		int size = settings.getProgramSettings().getThreads();
-		for ( int i = 0; i < size; i++ )
+		for ( int i = 0; i < size; i++ ) {
 			downloaders.add(new Downloader(this));
+			ProgramMonitor.setRegisteredDownloaders(i);
+		}
 	}
 	
 	/**

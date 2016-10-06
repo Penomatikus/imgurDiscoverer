@@ -21,7 +21,19 @@ public class ProgramMonitor implements Singleton {
 	/**
 	 * Indicates the downloaded MB at runtime;
 	 */
-	private static double downloadedMegabyteAtRuntime;
+	private static volatile double downloadedMegabyteAtRuntime;
+	/**
+	 * All downloaded files 
+	 */
+	private static volatile long allDownloadedFiles;
+	/**
+	 * All progressed files
+	 */
+	private static long allProgressedFiles;
+	/**
+	 * All registered downloaders
+	 */
+	private static int registeredDownloaders;
 	
 	/**
 	 * Holds and monitors program information like, 
@@ -29,7 +41,10 @@ public class ProgramMonitor implements Singleton {
 	 */
 	private ProgramMonitor() {
 		downloadersAreRunning = false;
-		downloadedMegabyteAtRuntime = 0l;
+		downloadedMegabyteAtRuntime = 0;
+		allDownloadedFiles = 0l;
+		allProgressedFiles = 0l;
+		registeredDownloaders = 0;
 	}
 
 	/**
@@ -60,17 +75,57 @@ public class ProgramMonitor implements Singleton {
 	 * Adds a new value to the current downloaded megabytes
 	 * @param addition new value added to the current downloaded megabytes
 	 */
-	public static void addDownloadedMegabyteAtRuntime(double addition){
+	public static synchronized void addDownloadedMegabyteAtRuntime(double addition){
 		ProgramMonitor.downloadedMegabyteAtRuntime += addition;
 	}
 	
 	/**
 	 * @return {@link ProgramMonitor#downloadedMegabyteAtRuntime}
 	 */
-	public static double getDownloadedMegabyteAtRuntime(){
+	public static synchronized double getDownloadedMegabyteAtRuntime(){
 		return ProgramMonitor.downloadedMegabyteAtRuntime;
 	}
+
+	/**
+	 * @return the allFiles
+	 */
+	public static synchronized long getAllDownloadedFiles() {
+		return allDownloadedFiles;
+	}
+
+	/**
+	 * @param allFiles the allFiles to set
+	 */
+	public static synchronized void setAllDownloadedFiles(long allFiles) {
+		ProgramMonitor.allDownloadedFiles = allFiles;
+	}
+
+	/**
+	 * @return the registeredDownloaders
+	 */
+	public static synchronized int getRegisteredDownloaders() {
+		return registeredDownloaders;
+	}
+
+	/**
+	 * @param registeredDownloaders the registeredDownloaders to set
+	 */
+	public static synchronized void setRegisteredDownloaders(int registeredDownloaders) {
+		ProgramMonitor.registeredDownloaders = registeredDownloaders;
+	}
 	
-	
+	/**
+	 * @return the allProgressedFiles
+	 */
+	public static long getAllProgressedFiles() {
+		return allProgressedFiles;
+	}
+
+	/**
+	 * @param allProgressedFiles the allProgressedFiles to set
+	 */
+	public static void setAllProgressedFiles(long allProgressedFiles) {
+		ProgramMonitor.allProgressedFiles = allProgressedFiles;
+	}
 
 }
