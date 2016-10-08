@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +56,12 @@ public class ImageBox extends JPanel {
 	private MouseAdapter mouseAdapter;
 	private ImagePanel selected;
 	private Color background;
+	private SoftReference<BufferedImage> reference;
 	
 	public ImageBox(ImageData resource) {
 		this.resource = resource;
 		this.isSelected = false;
-	
+		reference = new SoftReference<BufferedImage>(resource.getImageData());
 		setBorder(BorderFactory.createDashedBorder(Color.GRAY, 2.0f, 1.8f, 1.2f, true));
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		if ( resource.getImageData() != null )
@@ -108,9 +110,8 @@ public class ImageBox extends JPanel {
 		add(content, BorderLayout.CENTER);
 		
 		if ( resource.getImageData() != null ) {
-			ImagePanel panel = new ImagePanel(resource.getImageData(), 0, 0);
+			ImagePanel panel = new ImagePanel(reference.get(), 0, 0);
 			content.add(panel);
-			panel.release();
 		}
 
 		
@@ -138,7 +139,6 @@ public class ImageBox extends JPanel {
 	
 	private void flushImageMemory(){
 		resource.release();
-		resource = null;
 	}
 	
 	/**

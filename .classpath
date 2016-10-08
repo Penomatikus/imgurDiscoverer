@@ -13,5 +13,6 @@
 			<attribute name="javadoc_location" value="jar:file:/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/imgscalr-lib-4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

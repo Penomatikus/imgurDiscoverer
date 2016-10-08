@@ -14,6 +14,9 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Method;
+import org.imgscalr.Scalr.Mode;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
@@ -205,37 +208,24 @@ public class Downloader extends Thread {
 			String extension = imageURL.toString().split("\\.")[3].substring(0, 3);
 			bufferedImage = readImage(byteInputStream, extension)[0];
 			byteInputStream.close();
-			ImageDownScaler downScaler = new ImageDownScaler(bufferedImage);
-			ImageData data = new ImageData(downScaler.downScale(), 0 ,String.valueOf(hash), "");
-			downScaler.release();
+			File file = new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension);
+			ImageIO.write(bufferedImage, extension,	file);
+			double bytes = file.length();
+			System.out.println(bytes);
+			double kilobytes = (bytes / 1024);
+			double megabytes = (kilobytes / 1024);
+			double fileSize = megabytes;
+			ProgramMonitor.addDownloadedMegabyteAtRuntime(fileSize);
+			ImageData data = new ImageData( Scalr.resize(bufferedImage, Method.QUALITY, Mode.AUTOMATIC, 
+											220, 220 ,Scalr.OP_ANTIALIAS), fileSize ,String.valueOf(hash),
+											extension );
+			bufferedImage.flush();
 			return data;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return new ImageData(String.valueOf(hash));
-		//return (data != null ) ? data : ( data = new ImageData(String.copyValueOf(hash) ) );
 	}
-//	private ImageData downloadImage(URL imageURL){
-//		String extension = "";
-//		try ( ImageInputStream stream = ImageIO.createImageInputStream(
-//				imageURL.openStream())){
-//			Iterator<ImageReader> iterator = ImageIO.getImageReaders(stream);
-//			if ( !iterator.hasNext() )
-//				return new ImageData(String.copyValueOf(hash));
-//			ImageReader reader = (ImageReader) iterator.next();
-//			reader.getDefaultReadParam(); 
-//			reader.setInput(stream, true, true);
-//			ImageReadParam param = new ImageReadParam();
-//			
-//			param.setSourceSubsampling(220, 200, 0, 0);
-//			bufferedImage = reader.read(0);
-//			extension = reader.getFormatName();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return new ImageData(bufferedImage, 0, String.valueOf(hash), extension);
-//	}
-	
 	
 	private BufferedImage[] readImage(InputStream in, String extension) throws Exception{
 	    Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(extension);

@@ -146,7 +146,8 @@ public final class ImageData {
 			imageData.flush();
 			imageData = null;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			if ( !( e instanceof NullPointerException ) )
+				e.printStackTrace();
 		}
 	}
 }

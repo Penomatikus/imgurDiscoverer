@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 
 import imgurDiscoverer.backend.logic.Singleton;
 
@@ -109,9 +107,6 @@ public class ImageBoxArea extends JPanel implements Singleton {
 	 * @param box	The {@link ImageBox} to add
 	 */
 	public void addBox(ImageBox box){
-//		WeakReference<ImageBox> boxReference = new WeakReference<ImageBox>(box);
-//		box = null;
-		// For the spacing between each imagebox
 		JPanel space = new JPanel();
 		space.setBackground(new Color(20, 21, 24));
 		space.setSize(new Dimension(10, 10));
@@ -123,10 +118,6 @@ public class ImageBoxArea extends JPanel implements Singleton {
 			rows.add(row);							// add created row to the row list
 			rows.get(rows.size()-1).add(space);		// add the space panel to the created row
 			add(row);								// add row to the imagebox-area
-//			if ( test(row) ) {
-//				revalidate();
-//				repaint();
-//			}
 			init.setBounds(0, (int) init.getY() + ImageBox.HEIGHT + 10, 100, ImageBox.HEIGHT);
 		} else {
 			boxes.add(box);							
@@ -136,16 +127,16 @@ public class ImageBoxArea extends JPanel implements Singleton {
 		
 		
 	}
-	
-	private boolean test(RowPanel row) {
-		JViewport viewport = parent.getViewport();
-		Rectangle one = viewport.getViewRect();
-		Rectangle two = row.getViewPort();
-		if ( one.intersects(two) )
-			return true;
-		else
-			return false;
-	}
+//	
+//	private boolean test(RowPanel row) {
+//		JViewport viewport = parent.getViewport();
+//		Rectangle one = viewport.getViewRect();
+//		Rectangle two = row.getViewPort();
+//		if ( one.intersects(two) )
+//			return true;
+//		else
+//			return false;
+//	}
 		
 	/**
 	 * @return {@link ImageBoxArea#boxes}
@@ -185,7 +176,7 @@ public class ImageBoxArea extends JPanel implements Singleton {
 		/**
 		 * The view rectangle
 		 */
-		private Rectangle viewport;
+		//private Rectangle viewport;
 		
 		/**
 		 * Provides a {@link JPanel}  using a {@link BoxLayout}  ( with X axis arrangement )
@@ -204,7 +195,7 @@ public class ImageBoxArea extends JPanel implements Singleton {
 			setBackground(new Color(20, 21, 24));
 			//setDoubleBuffered(true);
 			this.parent = parent;
-			this.viewport = viewport;
+			//this.viewport = viewport;
 		}
 		
 		@Override
@@ -212,10 +203,10 @@ public class ImageBoxArea extends JPanel implements Singleton {
 			super.paintComponent(g);
 			setMaximumSize(new Dimension(parent.getWidth(), ImageBox.HEIGHT));
 		}
-		
-		public Rectangle getViewPort(){
-			return viewport;
-		}
+//		
+//		public Rectangle getViewPort(){
+//			return viewport;
+//		}
 	}
 
 }
