@@ -65,7 +65,7 @@ public class URLValidator {
 		Element element = null;
 		URL directURL = null;
 		try {
-			element = Jsoup.parse(url, 3000).getElementsByAttributeValue("rel", "image_src").first();
+			element = Jsoup.parse(url, 5000).getElementsByAttributeValue("rel", "image_src").first();
 			if ( element != null ) {
 				directURL = new URL(element.attr("href").toString());
 				element = null;
@@ -74,6 +74,7 @@ public class URLValidator {
 				throw new NullPointerException("There was no Element for image source at: " + url.toString());
 		} catch (Exception e) {
 			System.err.println("[Downloader] Could not receive direct image link ( " + url.toString() + ") ");
+			e.printStackTrace();
 		}
 		return directURL;
 	}

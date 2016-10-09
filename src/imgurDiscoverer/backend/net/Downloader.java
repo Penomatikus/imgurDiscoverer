@@ -24,7 +24,7 @@ import imgurDiscoverer.backend.logic.HashGenerator;
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
-import imgurDiscoverer.backend.view.ImageDownScaler;
+import imgurDiscoverer.backend.time.Stopwatch;
 
 
 /**
@@ -103,6 +103,14 @@ public class Downloader extends Thread {
 	 * Holds the generated {@link ImageData} for passing it to {@link DownloadManager#process(List)}
 	 */
 	private List<ImageData> tmp;
+	/**
+	 * Holds all found hashes
+	 */
+	private List<char[]> foundHashes;
+	/**
+	 * Holds all not found hashes
+	 */
+	private List<char[]> notFoundHashes;
 	
 	/**
 	 * Provides an object, to download an image from a specific Imgur URL.<br>
@@ -144,10 +152,28 @@ public class Downloader extends Thread {
 		this.generator = new HashGenerator();
 		this.isRunning = true;
 		this.settings = Settings.createSettings();
+		this.foundHashes = new ArrayList<>(500);
+		this.notFoundHashes = new ArrayList<>(500);
+		ProgramMonitor.setRegisteredDownloaders(1);
+
 	}
 	
+	/**
+	 * While {@link ProgramMonitor#getDownloadedMegabyteAtRuntime()} is smaller then
+	 * the user preferred maximum download size in MB, {@link Downloader#process()} will be 
+	 * executed. If this becomes false, {@link Downloader#cancel()} will be called.
+	 * However, before all this happens, a new {@link Stopwatch} will be executed, which will cause
+	 * a tiny pause of two seconds for every loop. <br>
+	 * After the {@link Downloader} was instructed to stop, it will unregister its self from 
+	 * {@link ProgramMonitor#getRegisteredDownloaders()}
+	 */
 	@Override
 	public void run() {
+		boolean doFound = settings.getProgramSettings().isSaveFoundHashes();
+		boolean doNotFound = settings.getProgramSettings().isSaveNotFoundHashes();
+		Stopwatch stopwatch = new Stopwatch(2);
+		stopwatch.go();
+		
 		while ( isRunning ) {
 			long current = (long) ProgramMonitor.getDownloadedMegabyteAtRuntime();
 			long allowed = settings.getProgramSettings().getMaxMegabyte();
@@ -155,6 +181,9 @@ public class Downloader extends Thread {
 				process();
 			else
 				cancel();
+			putHashesToLists(doFound, doNotFound);
+			while( !stopwatch.isDone());
+			stopwatch.go();
 		}
 		ProgramMonitor.setRegisteredDownloaders(
 				ProgramMonitor.getRegisteredDownloaders() - 1);
@@ -162,10 +191,17 @@ public class Downloader extends Thread {
 	
 	/**
 	 * Initializes {@link Downloader#tmp} and generates a new hash, which will be
-	 * checked by an {@link URLValidator}. If the hash is valid, {@link Downloader#downloadImage(URL)}
-	 * is called. At last, {@link Downloader#notAllowDownload} will be incremented and passed 
-	 * to the {@link ProgramMonitor} and {@link Downloader#push(List)} is called to push 
-	 * {@link Downloader#tmp}, now with the {@link ImageData}, to the {@link DownloadManager}. 
+	 * checked by an {@link URLValidator} instance. The next step, is to check if
+	 * the user preferred either do want to download the image behind the hash or
+	 * not. <br>
+	 * If he don't want, a new {@link ImageData} with only the String value of the hash
+	 * will be added to {@link Downloader#tmp}.<br>
+	 * If he do want, a new {@link ImageData} object will be returned from 
+	 * {@link Downloader#downloadImage(URL)} and added to {@link Downloader#tmp}.
+	 * Moreover, {@link ProgramMonitor#setAllDownloadedFiles(long)} will be increased by 
+	 * one. <br>
+	 * At least {@link Downloader#tmp} will passed to the {@link DownloadManager} for 
+	 * processing the data.
 	 */
 	private void process(){
 		tmp = new ArrayList<>(1);
@@ -174,9 +210,10 @@ public class Downloader extends Thread {
 			if ( urlValidator.isValid( hash )) {
 				if ( notAllowDownload ) 
 					tmp.add(new ImageData(String.valueOf(hash)));
-			    else 
+			    else {
 					tmp.add(downloadImage(urlValidator.getImageURL()));	
-				ProgramMonitor.setAllDownloadedFiles(++downloadedFiles);
+					ProgramMonitor.setAllDownloadedFiles(++downloadedFiles);
+			    }
 				push(tmp);
 			}
 		} catch (Exception e) {
@@ -185,41 +222,64 @@ public class Downloader extends Thread {
 	}
 	
 	/**
+	 * Adds the current hash to the list of the found or not found hashes. 
+	 * @param doFound		adds it to the dound list
+	 * @param doNotFound	adds it to the not found list
+	 */
+	private void putHashesToLists(boolean doFound, boolean doNotFound) {
+		if ( doFound )
+			foundHashes.add(hash);
+		if ( doNotFound )
+			notFoundHashes.add(hash);
+	}
+
+	/**
 	 * Calls {@link DownloadManager#process(List)} for passing the data to it 
 	 * @param data	{@link Downloader#tmp}
 	 */
-	private static synchronized void push(List<ImageData> data){
+	private void push(List<ImageData> data){
 		manager.process(data); 
 	};
 	
 	/**
-	 * Downloads the preview HTML page of the image and extracts the direct image path, 
-	 * the image is downloaded from. It will get the image height and width, its file size 
-	 * and its extension. 
+	 * Opens a stream to the given {@link URL} and passes the received bytes into an 
+	 * array. Out of this array a new {@link BufferedImage} will be created via 
+	 * {@link Downloader#readImage(InputStream, String)}. <br>
+	 * Next, it writes the {@link BufferedImage} to disk and calculates the file size
+	 * of it. The file destination will be the user preferred path for the images. <br>
+	 * At least the {@link BufferedImage} will be down scaled to 220px x 220px and passed
+	 * to a new instance of {@link ImageData}, which then will be returned. <br>
+	 * In case of any error, while processing the above steps, the method will just return 
+	 * an instance of {@link ImageData} with the found valid hash.
 	 * @param imageURL	the URL to download the images preview page from
 	 * @return	new {@link ImageData} out of the collected downloaded image information
 	 * @throws IOException	if the download failed or the image to disk process
 	 */
-	private ImageData downloadImage(URL imageURL) throws IOException{
+	private ImageData downloadImage(URL imageURL) {
 		BufferedImage bufferedImage = null;
 		try( InputStream in = imageURL.openStream() ) {
+			// Downloading part
 			byte[] imageBytes = IOUtils.toByteArray(in);
 			ByteInputStream byteInputStream = new ByteInputStream(imageBytes, imageBytes.length);
 			String extension = imageURL.toString().split("\\.")[3].substring(0, 3);
 			bufferedImage = readImage(byteInputStream, extension)[0];
 			byteInputStream.close();
+			
+			// File writing part
 			File file = new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension);
 			ImageIO.write(bufferedImage, extension,	file);
 			double bytes = file.length();
-			System.out.println(bytes);
 			double kilobytes = (bytes / 1024);
 			double megabytes = (kilobytes / 1024);
 			double fileSize = megabytes;
+			
+			// Image scaling and ImageData-creating part
 			ProgramMonitor.addDownloadedMegabyteAtRuntime(fileSize);
-			ImageData data = new ImageData( Scalr.resize(bufferedImage, Method.QUALITY, Mode.AUTOMATIC, 
+			ImageData data = new ImageData( Scalr.resize(bufferedImage, Method.SPEED, Mode.AUTOMATIC, 
 											220, 220 ,Scalr.OP_ANTIALIAS), fileSize ,String.valueOf(hash),
 											extension );
 			bufferedImage.flush();
+			imageBytes = null;
 			return data;
 		} catch (Exception e) {
 			e.printStackTrace();

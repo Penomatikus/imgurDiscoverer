@@ -46,6 +46,10 @@ public class ProgramSettings implements Serializable {
 	 * The maximum amount of MB to download
 	 */
 	private int maxMegabyte;
+	/**
+	 * The index of {@link SettingsWindow}'s maxDownloads
+	 */
+	private int maxMegabyteIndex; 
 	
 	/**	
 	 * Provides an object, holding information about the program 
@@ -58,10 +62,11 @@ public class ProgramSettings implements Serializable {
 	public ProgramSettings() {
 		threads = 8;
 		threadIndex = 2;
+		maxMegabyteIndex = 2;
 		saveFoundHashes = true;
 		saveNotFoundHashes = false;
 		notAllowDownload = false;
-		setMaxMegabyte(5000);
+		setMaxMegabyte(150);
 	}
 	
 	/**
@@ -90,9 +95,25 @@ public class ProgramSettings implements Serializable {
 			case 16:  threadIndex = 3; break;
 			case 32:  threadIndex = 4; break;
 			case 64:  threadIndex = 5; break;
-			case 128: threadIndex = 6; break;
 			default: System.out.println("Jack... HOW? " + threads);
 
+		}
+	}
+	
+	public void setMaxDownloadsIndex(){
+		switch (maxMegabyte) {
+			case 50:	maxMegabyteIndex = 0; break;
+			case 100:	maxMegabyteIndex = 1; break;
+			case 150:	maxMegabyteIndex = 2; break;
+			case 200:	maxMegabyteIndex = 3; break;
+			case 250:	maxMegabyteIndex = 4; break;
+			case 300:	maxMegabyteIndex = 5; break;
+			case 350:	maxMegabyteIndex = 6; break;
+			case 400:	maxMegabyteIndex = 7; break;
+			case 450:	maxMegabyteIndex = 8; break;
+			case 500:	maxMegabyteIndex = 9; break;
+			case 550:	maxMegabyteIndex = 10; break; 
+			default: System.out.println("Jack... HOW? " + threads);
 		}
 	}
 	
@@ -142,5 +163,9 @@ public class ProgramSettings implements Serializable {
 
 	public void setMaxMegabyte(int maxMegabyte) {
 		this.maxMegabyte = maxMegabyte;
+	}
+	
+	public int getMaxMegabyteIndex(){
+		return maxMegabyteIndex;
 	}
 }

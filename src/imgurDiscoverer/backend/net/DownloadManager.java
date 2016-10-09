@@ -224,10 +224,8 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	private void prepareDownloaders() {
 		Settings settings = Settings.createSettings();
 		int size = settings.getProgramSettings().getThreads();
-		for ( int i = 0; i < size; i++ ) {
+		for ( int i = 0; i < size; i++ ) 
 			downloaders.add(new Downloader(this));
-			ProgramMonitor.setRegisteredDownloaders(i);
-		}
 	}
 	
 	/**

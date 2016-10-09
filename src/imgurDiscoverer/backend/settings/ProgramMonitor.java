@@ -111,7 +111,7 @@ public class ProgramMonitor implements Singleton {
 	 * @param registeredDownloaders the registeredDownloaders to set
 	 */
 	public static synchronized void setRegisteredDownloaders(int registeredDownloaders) {
-		ProgramMonitor.registeredDownloaders = registeredDownloaders;
+		ProgramMonitor.registeredDownloaders += registeredDownloaders;
 	}
 	
 	/**

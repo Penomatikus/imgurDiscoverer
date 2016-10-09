@@ -1,6 +1,5 @@
 package imgurDiscoverer.frontent.frameextra;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -27,12 +26,12 @@ import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
 import imgurDiscoverer.frontent.componets.InformationPanel;
-import imgurDiscoverer.frontent.componets.IntelligentTextfield;
 
 public class SettingsWindow extends JFrame implements Window {
 
 	private static final long serialVersionUID = 1L;
 	private JComboBox<Integer> threadBox;
+	private JComboBox<Integer> maxDownloads;
 	private JLabel threadBoxDescription;
 	private JCheckBox saveFound;
 	private JCheckBox saveNotFound;
@@ -40,7 +39,6 @@ public class SettingsWindow extends JFrame implements Window {
 	private JLabel saveHashDes;
 	private JLabel saveImageDes;
 	private JCheckBox onlyCheckNotDownload;
-	private IntelligentTextfield maxDownload;
 	private JButton ok;
 	private JButton abort;
 	private JButton defaults;
@@ -125,9 +123,9 @@ public class SettingsWindow extends JFrame implements Window {
 		threadBoxDescription.setForeground(Utils.colorImgurWhite());
 		advanced.add(threadBoxDescription);
 		
-		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 64, 128});
+		threadBox = new JComboBox<Integer>(new Integer[]{ 2, 4, 8, 16, 32, 64});
 		threadBox.setBounds(280, 18, 100, 25);
-		threadBox.setBackground(new Color(52, 55, 60 ));
+		threadBox.setBackground(Utils.colorImgurDarkGrey());
 		threadBox.setSelectedIndex(settings.getProgramSettings().getThreadBoxIndex());
 		advanced.add(threadBox);
 		
@@ -141,9 +139,12 @@ public class SettingsWindow extends JFrame implements Window {
 		maxDownloadDescription.setForeground(Utils.colorImgurWhite());
 		advanced.add(maxDownloadDescription);
 		
-		maxDownload = new IntelligentTextfield(280, 53, 100, 25);
-		maxDownload.setText(settings.getProgramSettings().getMaxMegabyte() + "");
-		advanced.add(maxDownload);
+		maxDownloads = new JComboBox<>(new Integer[]{ 50, 100, 150, 200, 250, 300, 350,
+													  400, 450, 500, 550 } ); 
+		maxDownloads.setSelectedIndex(settings.getProgramSettings().getMaxMegabyteIndex());
+		maxDownloads.setBounds(280, 53, 100, 25);
+		maxDownloads.setBackground(Utils.colorImgurDarkGrey());
+		advanced.add(maxDownloads);
 		
 		Border border2 = BorderFactory.createTitledBorder(null, "Storage management", TitledBorder.LEFT, TitledBorder.TOP, font2, Utils.colorImgurGreen());
 		JPanel directories = new JPanel(null);
@@ -245,12 +246,15 @@ public class SettingsWindow extends JFrame implements Window {
 		ok.addActionListener( (e) -> {
 			if ( !ProgramMonitor.isDownloadersAreRunning() ) {
 				settings.getProgramSettings().setThreads((int)threadBox.getSelectedItem());
+				settings.getProgramSettings().setThreadIndex();
 				settings.getProgramSettings().setSaveFoundHashes(saveFound.isSelected());
 				settings.getProgramSettings().setSaveNotFoundHashes(saveNotFound.isSelected());
 				settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
-				Integer i = Integer.parseInt(maxDownload.getText());
-				InformationPanel.getBar().setString("0.0 mb / "	+ i + " mb");
-				settings.getProgramSettings().setMaxMegabyte(i);
+				
+				settings.getProgramSettings().setMaxMegabyte((int) maxDownloads.getSelectedItem());
+				System.out.println((int) maxDownloads.getSelectedItem());
+				InformationPanel.getBar().setString("0.0 mb / "	+ (int) maxDownloads.getSelectedItem() + " mb");
+				settings.getProgramSettings().setMaxDownloadsIndex();
 				System.out.println(settings.toStaticString());
 				settings.createSettingsFile();
 				dispose();
@@ -278,9 +282,9 @@ public class SettingsWindow extends JFrame implements Window {
 				onlyCheckNotDownload.setSelected(false);
 				settings.getProgramSettings().setIsDownloadAllowed(onlyCheckNotDownload.isSelected());
 				
-				int i = 5000;
-				InformationPanel.getBar().setString("0.0 mb / "	+ i + " mb");
-				settings.getProgramSettings().setMaxMegabyte(i);
+				maxDownloads.setSelectedIndex(2);
+				settings.getProgramSettings().setMaxMegabyte(150);
+				InformationPanel.getBar().setString("0.0 mb / "	+ 150 + " mb");
 				
 				System.out.println(settings.toStaticString());
 			} else {
