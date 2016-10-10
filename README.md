@@ -9,7 +9,7 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 
   
 ### Short preview  
-<img align="left" src="https://i.imgur.com/LcLOoX5.png" width="1100">
+<img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100">
 
 ### How to use
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae sodales dolor. Nam eget tempus nisl. Donec pulvinar felis a justo pharetra eleifend. Praesent nunc est, fermentum id maximus non, bibendum quis diam. Vivamus id accumsan nisi. Cras at orci pulvinar, tempor eros sed, faucibus metus. Aenean mattis leo in velit maximus, at commodo mauris lobortis. Morbi quis purus arcu. Morbi justo nunc, tincidunt eu dolor a, suscipit condimentum lectus.
