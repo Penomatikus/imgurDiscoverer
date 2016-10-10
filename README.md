@@ -5,7 +5,7 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 
 ### System requirements   
 ![Java Icon](http://findicons.com/files/icons/1008/quiet/16/java.png) Java Runtime Environment: [Download current version](https://java.com/de/download/)  
-![RAM Icon](https://cdn3.iconfinder.com/data/icons/discovery/16x16/devices/gnome-dev-media-cf.png) RAM locked between: 125MB - 450MB. Average is ~180MB ( This tool handels a lot of image data )
+![RAM Icon](https://cdn3.iconfinder.com/data/icons/discovery/16x16/devices/gnome-dev-media-cf.png) RAM locked between: 125MB - 250MB. Average is ~180MB ( This tool handels a lot of image data )
 
   
 ### Short preview  
