@@ -11,8 +11,6 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ### Short preview: Program  
 <img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100"> 
   
-### Short preview: Settings  
-<img align="left" src="https://i.imgur.com/hZhqNyv.png" width="1100">  
 
 
 ### How to use
