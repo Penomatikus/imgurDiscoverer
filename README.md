@@ -11,7 +11,10 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ### Short preview: Program  
 <img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100"> 
   
-
+  
+### Customizable program settings  
+* Threads: Choose between 2, 4, 8, 16, 32 or 64 threads. A single thread handels the generation of hashes, thoose validation and download task. Use more, if you want faster results. However, be carefull. Imgur might notice your heavy connection rate to their server and temporary blocks your IP.
+* Maximum megabytes ( mb ) to download: Choose between 50, 100, 150, 200, 250, 300, 350, 400, 450, 500 or 550 megabytes as maximum download size in total. Is this limit reached, all current download tasks will finish and no new one will start.
 
 ### How to use
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae sodales dolor. Nam eget tempus nisl. Donec pulvinar felis a justo pharetra eleifend. Praesent nunc est, fermentum id maximus non, bibendum quis diam. Vivamus id accumsan nisi. Cras at orci pulvinar, tempor eros sed, faucibus metus. Aenean mattis leo in velit maximus, at commodo mauris lobortis. Morbi quis purus arcu. Morbi justo nunc, tincidunt eu dolor a, suscipit condimentum lectus.
