@@ -8,9 +8,11 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ![RAM Icon](https://cdn3.iconfinder.com/data/icons/discovery/16x16/devices/gnome-dev-media-cf.png) RAM locked between: 125MB - 250MB. Average is ~180MB ( This tool handels a lot of image data )
 
   
-### Short preview  
-<img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100">  
-<img align="left" src="https://i.imgur.com/wVfIXrT.png" width="1100">  
+### Short preview: Program  
+<img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100"> 
+  
+### Short preview: Settings  
+<img align="left" src="https://i.imgur.com/hZhqNyv.png" width="1100">  
 
 
 ### How to use
