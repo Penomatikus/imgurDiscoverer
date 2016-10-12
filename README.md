@@ -6,8 +6,12 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ### System requirements   
 ![Java Icon](http://findicons.com/files/icons/1008/quiet/16/java.png) Java Runtime Environment: [Download current version](https://java.com/de/download/)  
 ![RAM Icon](https://cdn3.iconfinder.com/data/icons/discovery/16x16/devices/gnome-dev-media-cf.png) RAM locked between: 125MB - 250MB. Average is ~180MB ( This tool handels a lot of image data )
-
   
+### Download
+<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-Document-Save-32.png" width="16"> Download Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.  
+<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-Document-Save-32.png" width="16"> Download OSX: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.   
+<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-Document-Save-32.png" width="16"> Download Windows: &nbsp;Not available now.  
+
 ### Short preview: Program  
 <img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100"> 
   
