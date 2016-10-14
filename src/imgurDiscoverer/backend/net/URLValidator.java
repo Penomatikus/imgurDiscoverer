@@ -1,6 +1,7 @@
 package imgurDiscoverer.backend.net;
 
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import org.jsoup.Jsoup;
@@ -47,15 +48,23 @@ public class URLValidator {
 	 * @return	true if the status code is 200
 	 */
 	public boolean isValid(char[] hash){
-		int statusCode = 0;
+		boolean bool = false; 
+		HttpURLConnection con = null;
 		try {
 			url = new URL(IMAGE_URL + String.valueOf(hash));
-			HttpURLConnection con = (HttpURLConnection ) url.openConnection();
-			statusCode = con.getResponseCode();
+			System.out.println(IMAGE_URL + String.valueOf(hash));
+			con = (HttpURLConnection ) url.openConnection();
+			con.setConnectTimeout(3000);
+			con.setReadTimeout(3000);
+			bool = true;
+			//statusCode = con.getResponseCode();
 		} catch (Exception e) {
-			e.printStackTrace();
+			if ( !(e instanceof SocketTimeoutException) )
+				e.printStackTrace();
+		} finally {
+			con.disconnect();
 		}
-		return ( statusCode == 200 ) ? true : false;
+		return bool; //( statusCode == 200 ) ? true : false;
 	}
 	
 	/**
@@ -65,7 +74,7 @@ public class URLValidator {
 		Element element = null;
 		URL directURL = null;
 		try {
-			element = Jsoup.parse(url, 5000).getElementsByAttributeValue("rel", "image_src").first();
+			element = Jsoup.parse(url, 1000).getElementsByAttributeValue("rel", "image_src").first();
 			if ( element != null ) {
 				directURL = new URL(element.attr("href").toString());
 				element = null;

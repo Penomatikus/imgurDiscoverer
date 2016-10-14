@@ -3,8 +3,11 @@ package imgurDiscoverer.frontent.componets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.swing.ImageIcon;
@@ -115,12 +118,12 @@ public class ImagePanel extends JPanel {
 	public ImagePanel(BufferedImage bufferedImage, int x_cord, int y_cord) {
 		this(x_cord, y_cord);
 		replaceImage(bufferedImage);
-		//addImage();
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		image.setAccelerationPriority(1);
 		g.drawImage(image, 0, 0, null);
 	    g.dispose();
 	}
@@ -145,6 +148,7 @@ public class ImagePanel extends JPanel {
 	 * Returns the height of the panel
 	 * @return the height of the panel
 	 */
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -153,6 +157,7 @@ public class ImagePanel extends JPanel {
 	 * Returns the width of the panel
 	 * @return the width of the panel
 	 */
+	@Override
 	public int getWidth() {
 		return width;
 	}

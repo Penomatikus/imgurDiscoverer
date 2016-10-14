@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,8 +17,10 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import imgurDiscoverer.backend.net.DownloadManager;
@@ -26,21 +29,80 @@ import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
+/**
+ * Provides an object for generating a panel to control the program with user
+ * interactions. <br>
+ * <li> Start a download session
+ * <li> Stop a running download session
+ * <li> Save selected images to another location
+ * <li> Open preferences
+ * <br><br>
+ * The panel its self have a fixed size of 1000px x 400px with a padding of 10px
+ * at each side. 
+ * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
+ *
+ */
 public class ControlPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Holds the button size
+	 */
 	private final Dimension buttonSize = new Dimension(30, 30);
+	/**
+	 * Used to describe the layout
+	 */
 	private GridBagConstraints constraints;
+	/**
+	 * Loads {@link ResourceImage#logo}
+	 */
 	private ImagePanel imagePanel;
+	/**
+	 * Button to start a search
+	 */
 	private JButton start;
+	/**
+	 * Button to stop a search
+	 */
 	private JButton stop;
+	/**
+	 * Button to open the settings window
+	 */
 	private JButton settings;
+	/**
+	 * Button to save selected images to another place
+	 */
 	private JButton save;
+	/**
+	 * References of selected images
+	 */
 	private List<ImageBox> imageBoxs;
+	/**
+	 * Needed as reference
+	 */
 	private ImageBoxArea imageBoxArea;
+	/**
+	 * The {@link ControlPanel} its self as parent reference for listeners 
+	 */
 	private ControlPanel parent;
+	/**
+	 * Holds the new copy location for images
+	 */
 	private String newDest; 
 	
+	/**
+	 * Provides an object for generating a panel to control the program with user
+	 * interactions. <br>
+	 * <li> Start a download session
+	 * <li> Stop a running download session
+	 * <li> Save selected images to another location
+	 * <li> Open preferences
+	 * <br><br>
+	 * The panel its self have a fixed size of 1000px x 400px with a padding of 10px
+	 * at each side. 
+	 * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
+	 *
+	 */
 	public ControlPanel(ImageBoxArea imageBoxArea) {
 		this.imageBoxArea = imageBoxArea;
 		this.imageBoxs = imageBoxArea.getBoxes();
@@ -49,18 +111,23 @@ public class ControlPanel extends JPanel {
 		setBackground(Utils.colorImgurLightGrey());
 		setSize(new Dimension(1000, 400));
 		setLayout(new GridBagLayout());
-		//setDoubleBuffered(true);
 		createLayout();
 		initComponets();
 		createActionListeners();
 	}
 	
+	/**
+	 * Initializes the constrains
+	 */
 	private void createLayout(){
 		constraints = new GridBagConstraints();
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 	}
 
+	/**
+	 * Generates the look
+	 */
 	private void initComponets(){
 		imagePanel = new ImagePanel(ResourceImage.logo, 0, 0);
 		add(imagePanel, constraints);
@@ -96,6 +163,9 @@ public class ControlPanel extends JPanel {
 		buttons.add(settings, constraints);
 	}
 	
+	/**
+	 * Adds action listeners to the buttons
+	 */
 	private void createActionListeners(){
 		start.addActionListener((e) -> {
 			if ( !ProgramMonitor.isDownloadersAreRunning() )
@@ -120,9 +190,7 @@ public class ControlPanel extends JPanel {
 			else {
 				newDest = askForNewPath();
 				copyFiles();
-			}
-				
-			
+			}	
 		});
 		
 		settings.addActionListener((e) -> {
@@ -132,6 +200,11 @@ public class ControlPanel extends JPanel {
 		});
 	}
 	
+	/**
+	 * Used to get the new user preferred path to copy the selected images 
+	 * to
+	 * @return the new user preferred path to copy the selected images 
+	 */
 	private String askForNewPath(){
 		JFileChooser chooser = new JFileChooser(); 
 	    chooser.setAcceptAllFileFilterUsed(false);
@@ -144,9 +217,17 @@ public class ControlPanel extends JPanel {
 	    return newPath.getAbsolutePath();		
 	}
 	
+	/**
+	 * Copys the selected images to the new destination and shows the copy
+	 * state in a new {@link CopyWindow}, which will be disposed after the 
+	 * progress is finished.
+	 */
 	private void copyFiles(){
+		CopyWindow copyWindow = new CopyWindow(imageBoxs.size());
 		try {
+			int i = 0;
 			for ( ImageBox ib : imageBoxs ) {
+				copyWindow.updateBar(i++);
 				if ( ib.isSelected ) {
 					Path dest = Paths.get(newDest + ib.getResourceName().getFileNameWithExtension(true));
 					Path source = Paths.get(ib.getResourceName().getFileLocationAtDownloadTime());
@@ -156,5 +237,51 @@ public class ControlPanel extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		copyWindow.dispose();
 	}
+	
+	/**
+	 * Provides an object for showing a copy dialog.
+	 * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
+	 *
+	 */
+	private class CopyWindow extends JFrame {
+
+		private static final long serialVersionUID = 1L;
+		/**
+		 * The {@link JProgressBar} to show the current progress
+		 */
+		private JProgressBar bar;
+	
+		/**
+		 * Provides an object for showing a copy dialog.
+		 * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
+		 *
+		 */
+		public CopyWindow(int maximum) {
+			setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
+			setSize(200, 60);
+			double[] display = Utils.displaySize();
+			int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
+			int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
+			setLocation(xLoc, yLoc);
+			setVisible(true);
+			
+			bar = new JProgressBar(0, maximum);
+			bar.setBounds(10, 10, 100, 30);
+			add(bar);
+		}
+		
+		/**
+		 * Updates the bar value
+		 * @param value new bar value
+		 */
+		public void updateBar(int value){
+			bar.setValue(value);
+			bar.setStringPainted(true);
+			bar.setString("Copy files");
+		}
+		
+	}
+	
 }

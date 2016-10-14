@@ -182,7 +182,7 @@ public class SettingsWindow extends JFrame implements Window {
 		saveHashDes.setForeground(Utils.colorImgurWhite());
 		directories.add(saveHashDes);
 		
-		saveImagePath = new JLabel("The current path to safe images:");
+		saveImagePath = new JLabel("The current path to save images:");
 		saveImagePath.setToolTipText("Does not download found images, but tells you if they exists.");
 		saveImagePath.setBounds(10, 99, 375, 30);
 		saveImagePath.setFont(font);

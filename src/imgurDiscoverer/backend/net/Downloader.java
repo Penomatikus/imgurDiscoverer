@@ -6,26 +6,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.imgscalr.Scalr;
-import org.imgscalr.Scalr.Method;
-import org.imgscalr.Scalr.Mode;
 
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
+import imgurDiscoverer.backend.image.ImageColorPicker;
+import imgurDiscoverer.backend.image.ImageDownScaler;
+import imgurDiscoverer.backend.image.ImageFileReader;
 import imgurDiscoverer.backend.logic.HashGenerator;
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.time.Stopwatch;
 
+//service:jmx:rmi:///jndi/rmi://192.168.178.48:9010/jmxrmi
+/**
+ * 141.45.206.249
+ * -Xms128m -Xmx325m -XX:GCTimeRatio=19 -XX:+UseParallelOldGC -XX:+DisableExplicitGC -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=0
+ */
 
 /**
  * Provides an object, to download an image from a specific Imgur URL.<br>
@@ -59,13 +61,13 @@ import imgurDiscoverer.backend.time.Stopwatch;
  * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
  *
  */
-public class Downloader extends Thread {
+public class Downloader implements Runnable {
 	
 	/**
 	 * The {@link DownloadManager} for all {@link Downloader}s to use, 
 	 * for passing the generated {@link ImageData} to
 	 */
-	private static volatile DownloadManager manager;
+	private DownloadManager manager;
 	/**
 	 * Reference-number for all found images shared with all {@link Downloader}s
 	 */
@@ -94,7 +96,7 @@ public class Downloader extends Thread {
 	 * Indicates if the {@link Downloader} is still processing a download
 	 * or creating the {@link ImageData}
 	 */
-	private boolean isRunning;
+	private volatile boolean isRunning;
 	/**
 	 * For catching the preferred settings to use
 	 */
@@ -144,8 +146,9 @@ public class Downloader extends Thread {
 	 * @param manager
 	 */
 	public Downloader(DownloadManager manager) {
+		System.out.println("created");
 		Settings settings = Settings.createSettings();
-		Downloader.manager = manager;
+		this.manager = manager;
 		this.notAllowDownload = settings.getProgramSettings().isDownloadAllowed();
 		this.imagePath = settings.getDirectorySettings().getPathForImages();
 		this.urlValidator = new URLValidator();
@@ -155,7 +158,6 @@ public class Downloader extends Thread {
 		this.foundHashes = new ArrayList<>(500);
 		this.notFoundHashes = new ArrayList<>(500);
 		ProgramMonitor.setRegisteredDownloaders(1);
-
 	}
 	
 	/**
@@ -171,22 +173,30 @@ public class Downloader extends Thread {
 	public void run() {
 		boolean doFound = settings.getProgramSettings().isSaveFoundHashes();
 		boolean doNotFound = settings.getProgramSettings().isSaveNotFoundHashes();
-		Stopwatch stopwatch = new Stopwatch(2);
-		stopwatch.go();
+		long allowed = settings.getProgramSettings().getMaxMegabyte();
 		
 		while ( isRunning ) {
 			long current = (long) ProgramMonitor.getDownloadedMegabyteAtRuntime();
-			long allowed = settings.getProgramSettings().getMaxMegabyte();
+
 			if ( current < allowed )
 				process();
-			else
+			else 
 				cancel();
 			putHashesToLists(doFound, doNotFound);
-			while( !stopwatch.isDone());
-			stopwatch.go();
+			//throttleDown();
+			
 		}
 		ProgramMonitor.setRegisteredDownloaders(
 				ProgramMonitor.getRegisteredDownloaders() - 1);
+		System.out.println(" angehalten.");
+	}
+	
+	private void throttleDown(){
+		try {
+			Thread.sleep(500);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -210,10 +220,8 @@ public class Downloader extends Thread {
 			if ( urlValidator.isValid( hash )) {
 				if ( notAllowDownload ) 
 					tmp.add(new ImageData(String.valueOf(hash)));
-			    else {
-					tmp.add(downloadImage(urlValidator.getImageURL()));	
-					ProgramMonitor.setAllDownloadedFiles(++downloadedFiles);
-			    }
+			    else 
+			    	tmp.add(downloadImage(urlValidator.getImageURL()));	
 				push(tmp);
 			}
 		} catch (Exception e) {
@@ -256,18 +264,21 @@ public class Downloader extends Thread {
 	 * @throws IOException	if the download failed or the image to disk process
 	 */
 	private ImageData downloadImage(URL imageURL) {
+		System.out.println("Download image");
 		BufferedImage bufferedImage = null;
 		try( InputStream in = imageURL.openStream() ) {
 			// Downloading part
 			byte[] imageBytes = IOUtils.toByteArray(in);
 			ByteInputStream byteInputStream = new ByteInputStream(imageBytes, imageBytes.length);
 			String extension = imageURL.toString().split("\\.")[3].substring(0, 3);
-			bufferedImage = readImage(byteInputStream, extension)[0];
+			ImageFileReader imageFileReader = new ImageFileReader(byteInputStream, extension);
+			bufferedImage = imageFileReader.getImage();
+			ProgramMonitor.setAllDownloadedFiles(++downloadedFiles);
 			byteInputStream.close();
 			
 			// File writing part
 			File file = new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension);
-			ImageIO.write(bufferedImage, extension,	file);
+			ImageIO.write(bufferedImage, "JPEG", file); // reduce the file size bay 75% 
 			double bytes = file.length();
 			double kilobytes = (bytes / 1024);
 			double megabytes = (kilobytes / 1024);
@@ -275,33 +286,17 @@ public class Downloader extends Thread {
 			
 			// Image scaling and ImageData-creating part
 			ProgramMonitor.addDownloadedMegabyteAtRuntime(fileSize);
-			ImageData data = new ImageData( Scalr.resize(bufferedImage, Method.SPEED, Mode.AUTOMATIC, 
-											220, 220 ,Scalr.OP_ANTIALIAS), fileSize ,String.valueOf(hash),
-											extension );
+			BufferedImage thumb = ImageDownScaler.downScale(bufferedImage);
+			ImageData data = new ImageData(ImageDownScaler.downScale(bufferedImage), 
+										   ImageColorPicker.mostCommonColor(thumb), fileSize, String.valueOf(hash), extension);
 			bufferedImage.flush();
+			thumb.flush();
 			imageBytes = null;
 			return data;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return new ImageData(String.valueOf(hash));
-	}
-	
-	private BufferedImage[] readImage(InputStream in, String extension) throws Exception{
-	    Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(extension);
-	    ImageReader imageReader = (ImageReader) readers.next();
-	    ImageInputStream iis = ImageIO.createImageInputStream(in);
-	    imageReader.setInput(iis, false);
-	    int num = imageReader.getNumImages(true);
-	    BufferedImage images[]= new BufferedImage[num];
-	    for (int i = 0; i < num; ++i) 
-	    	images[i] = imageReader.read(i);
-	    if ( images.length > 1 )
-	    	for (int i = 1; i <= images.length; i++)
-	    		images[i].flush();
-	    iis.flush();
-	    iis.close();
-	    return images;
 	}
 	
 	/**

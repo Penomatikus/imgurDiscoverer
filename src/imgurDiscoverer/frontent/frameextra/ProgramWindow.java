@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
@@ -34,14 +36,15 @@ public class ProgramWindow extends JFrame implements Window {
 		setLocation(xLoc, yLoc);
 		initComponents();
 		setVisible(true);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 	}
 	
+	@Override
 	public void initComponents() {
 		imageBoxArea = ImageBoxArea.createImageBoxArea(0, 0, getWidth(), getHeight());
-		JScrollPane scrollPane = new JScrollPane(imageBoxArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED ,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scrollPane = new JScrollPane(imageBoxArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED ,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setForeground(Utils.colorImgurLightGrey());
 		scrollPane.setViewportBorder(null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(30);

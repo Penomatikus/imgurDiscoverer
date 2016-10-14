@@ -11,16 +11,23 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -40,6 +47,7 @@ public class PreviewWindow extends JFrame {
 	private JPanel info;
 	private JPanel rootPane;
 	private Color commonColor;
+	private JFrame parent;
 	
 	private WindowListener windowListener = new WindowListener() {
 		
@@ -77,10 +85,12 @@ public class PreviewWindow extends JFrame {
 	};
 	
 	public PreviewWindow(ImageData imageData, Color commonColor) {
+		this.parent = this;
 		this.imageData = imageData;
 		this.commonColor = commonColor;
 		this.rootPane = new JPanel();
 		setLayout(new BorderLayout());
+		setTitle("Preview: " + imageData.getName());
 		double[] display = Utils.displaySize();
 		setMinimumSize(new Dimension(1024, 768));
 		setMaximumSize(new Dimension((int)display[0], (int)display[1]));
@@ -120,12 +130,13 @@ public class PreviewWindow extends JFrame {
 		createAndAddInfoPanel("Common color: ", commonColor.getRed() + ", " +
 												commonColor.getGreen() + ", " + 
 												commonColor.getBlue() + " [RGB]");
-		createAndAddInfoPanel("File size in kb: ", imageData.getFileSize()+"");
+		createAndAddInfoPanel("File size in mb: ", imageData.getFileSize()+"");
+		addButton();
 		
 		imagePanel = new ImagePanel(imageReference.get(), 0, 0);
 		JScrollPane scrollPane = new JScrollPane(imagePanel, 
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBackground(commonColor);
 		scrollPane.setAlignmentX(SwingConstants.LEFT);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(30);
@@ -145,15 +156,6 @@ public class PreviewWindow extends JFrame {
 		}
 	}
 	
-//	@Override
-//	public void paint(Graphics g) {
-//		super.paint(g);
-//		System.out.println((int)getSize().getWidth());
-//		imagePanel.setLocation((int)getSize().getWidth() / 2 - imageReference.get().getWidth() /2,
-//				(int)getSize().getHeight() / 2 - imageReference.get().getHeight() / 2);
-//		
-//	}
-	
 	private void createAndAddInfoPanel(String labelName, String textAreaText){
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.setMaximumSize(new Dimension(300, 60));
@@ -170,6 +172,37 @@ public class PreviewWindow extends JFrame {
 		area.setFocusable(false);
 		area.setPreferredSize(new Dimension(200, 25));
 		panel.add(area);
+		info.add(panel);
+	}
+	
+	private void addButton(){
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.setMaximumSize(new Dimension(300, 60));
+		panel.setBackground(Utils.colorImgurDarkGrey());
+		panel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+		
+		JButton save = new JButton("Save this image");
+		save.addActionListener((e) ->{
+			JFileChooser chooser = new JFileChooser(); 
+		    chooser.setAcceptAllFileFilterUsed(false);
+		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		    chooser.setDialogTitle("Where would you like to copy to?");
+		    File newPath = null;
+		    if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+		    	newPath = chooser.getSelectedFile();
+		    }
+		    Path dest = Paths.get(newPath.getAbsolutePath() + imageData.getFileNameWithExtension(true));
+			Path source = Paths.get(imageData.getFileLocationAtDownloadTime());
+			try {
+				Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		    		
+		});
+		save.setPreferredSize(new Dimension(280, 30));
+		save.setToolTipText("( ͡° ͜ʖ ͡°)");
+		panel.add(save);
 		info.add(panel);
 	}
 

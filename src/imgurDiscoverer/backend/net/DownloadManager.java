@@ -8,6 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import org.omg.PortableServer.ThreadPolicy;
+
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
@@ -59,7 +61,11 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	/**
 	 * Holds all {@link Downloader}s managed by the object
 	 */
-	private List<Downloader> downloaders;
+	private static List<Downloader> downloaders;
+	/**
+	 * 
+	 */
+	private Thread[] threads;
 	/**
 	 * The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
 	 */
@@ -128,12 +134,20 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 * @param imageBoxArea	The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
 	 */
 	public DownloadManager(ImageBoxArea imageBoxArea) {
-		this.downloaders = new ArrayList<>();
+		if ( downloaders == null || downloaders.size() == 0 ) 
+			DownloadManager.downloaders = new ArrayList<>();
+		else {
+			DownloadManager.downloaders = null;
+			DownloadManager.downloaders = new ArrayList<>();
+		}
+		
 		this.imageBoxArea = imageBoxArea;
 		this.bar = InformationPanel.getBar();
 		this.currentTask = InformationPanel.getCurrentTaskDes();
 		this.downloadedImages = InformationPanel.getDownloadedImagesDes();
 		this.settings = Settings.createSettings();
+		threads = new Thread[settings.getProgramSettings().getThreads()];
+
 		prepare();
 	}
 	
@@ -167,7 +181,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 			while ( isRunning ); // wait until some one will change declaration "isRunning" 
 			updateLabel(currentTask, "Current task: Waiting for all downloaders to stop. ( No new downloads )");
 			stopDownloaders();
-			while ( ProgramMonitor.getRegisteredDownloaders() != 0 ); // wait for all downloaders to stop
+			//while ( ProgramMonitor.getRegisteredDownloaders() != 0 ); // wait for all downloaders to stop
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -224,31 +238,42 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	private void prepareDownloaders() {
 		Settings settings = Settings.createSettings();
 		int size = settings.getProgramSettings().getThreads();
-		for ( int i = 0; i < size; i++ ) 
-			downloaders.add(new Downloader(this));
+		for ( int i = 0; i < size; i++ ) {
+			Downloader downloader = new Downloader(this);
+			downloaders.add(downloader);
+			threads[i] = new Thread(downloader);
+			threads[i].setPriority(Thread.MIN_PRIORITY);
+		}
 	}
 	
 	/**
 	 * Starts the {@link Downloader}s
 	 */
 	private void startDownloaders(){
-		for ( Downloader d : downloaders )
-			d.start();
+		int size = downloaders.size();
+		for ( int i = 0; i < size; i++ ) {
+			threads[i].start();
+			System.out.println("[Download manager] starting: " + i);
+		}
 	}
 	
 	/**
 	 * Stops all running {@link Downloader}s
 	 */
 	private void stopDownloaders(){
-		for ( Downloader d : downloaders )
-			d.cancel();
+		int size = threads.length;
+		for ( int i = 0; i < size; i++ ) {
+			downloaders.get(i).cancel();
+			System.out.println("[Download manager] stopping " + i);
+		}
 	}
 	
 	/**
 	 * Stops the {@link DownloadManager} which will result 
 	 * in {@link DownloadManager#stopDownloaders()}
 	 */
-	public static void cancelDownloadProcess(){
+	public synchronized static void cancelDownloadProcess(){
+		System.out.println("STOP.");
 		DownloadManager.isRunning = false;
 	}
 	

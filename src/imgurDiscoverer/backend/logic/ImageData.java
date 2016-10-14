@@ -1,6 +1,13 @@
 package imgurDiscoverer.backend.logic;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.io.File;
 
 import imgurDiscoverer.backend.settings.Settings;
@@ -25,7 +32,7 @@ public final class ImageData {
 	/**
 	 *  The image data as {@link BufferedImage}
 	 */
-	private BufferedImage imageData; 
+	private Image imageData; 
 	/**
 	 * The image name
 	 */
@@ -42,6 +49,10 @@ public final class ImageData {
 	 * The location of the image at download time
 	 */
 	private String fileLocationAtDownloadTime;
+	/**
+	 * The most common color of the passed image;
+	 */
+	private Color mostCommon;
 	
 	/**
 	  * Provides an object for holding image information. <br>
@@ -59,8 +70,9 @@ public final class ImageData {
 	 * @param imageData the image data as {@link BufferedImage}
 	 * @param name the image name
 	 */
-	public ImageData(BufferedImage imageData, double fileSize, String name, String extension) {
+	public ImageData(Image imageData, Color mostCommon, double fileSize, String name, String extension) {
 		this.imageData = imageData;
+		this.mostCommon = mostCommon;
 		this.fileSize = fileSize;
 		this.name = name;
 		this.extension = extension; 
@@ -80,18 +92,20 @@ public final class ImageData {
  	  *    data.getName();
  	  *    data.getImageData(); // returns null cause no BufferedImage was set
  	  *    data.getExtension(); // returns "none" as String
+ 	  *    data.getFileSize(); // returns 0
+ 	  *    data.getMostCommonColor(); // returns null
  	  *   </code>
  	  *  </pre>
 	 * @param name the image name
 	 */
 	public ImageData(String name) {
-		this(null, 0, name, "none");
+		this(null, null, 0, name, "none");
 	}
 	
 	/**
 	 * @return {@link ImageData#imageData}
 	 */
-	public BufferedImage getImageData() {
+	public Image ugetImageData() {
 		return imageData;
 	}
 	
@@ -140,6 +154,9 @@ public final class ImageData {
 		return ( andWithSeperator ) ? File.separator + name : name;
 	}
 	
+	/**
+	 * Flushes the buffer of the bufferedimage and sets it to null.
+	 */
 	public void release(){
 		System.out.println("[ImageData] release memory in heap.");
 		try {
@@ -149,5 +166,28 @@ public final class ImageData {
 			if ( !( e instanceof NullPointerException ) )
 				e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * @return {@link ImageData#mostCommon}
+	 */
+	public Color getMostCommonColor(){
+		return mostCommon;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public VolatileImage createVolatileImage(){
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    GraphicsDevice gs = ge.getDefaultScreenDevice();
+        GraphicsConfiguration gc = gs.getDefaultConfiguration();
+        VolatileImage vbimage = gc.createCompatibleVolatileImage(220,220);
+        Graphics2D g2d = vbimage.createGraphics();
+        g2d.drawImage(imageData, 0, 0, null );
+        g2d.dispose();
+        release();
+        return vbimage;
 	}
 }
