@@ -77,7 +77,7 @@ public class SettingsWindow extends JFrame implements Window {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		settings = Settings.createSettings();
 		parent = this;
-		setSize(400, 540);
+		setSize(400, 550);
 		double[] display = Utils.displaySize();
 		int xLoc = (int)display[0] / 2 - (int)getSize().getWidth() / 2;
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
@@ -225,7 +225,7 @@ public class SettingsWindow extends JFrame implements Window {
 		
 		abort = new JButton("Abort");
 		abort.setToolTipText("Closes the window and dont use the new settings");
-		abort.setBounds(200, 440, 190, 30);
+		abort.setBounds(204, 440, 190, 30);
 		abort.setFont(font);
 		container.add(abort);
 		

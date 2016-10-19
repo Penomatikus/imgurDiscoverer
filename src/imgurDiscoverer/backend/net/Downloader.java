@@ -220,7 +220,7 @@ public class Downloader implements Runnable {
 			if ( urlValidator.isValid( hash )) {
 				if ( notAllowDownload ) 
 					tmp.add(new ImageData(String.valueOf(hash)));
-			    else 
+			    else
 			    	tmp.add(downloadImage(urlValidator.getImageURL()));	
 				push(tmp);
 			}

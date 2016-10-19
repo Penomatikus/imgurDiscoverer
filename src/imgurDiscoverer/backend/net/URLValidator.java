@@ -1,10 +1,13 @@
 package imgurDiscoverer.backend.net;
 
+import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Element;
 
 
@@ -49,20 +52,25 @@ public class URLValidator {
 	 */
 	public boolean isValid(char[] hash){
 		boolean bool = false; 
-		HttpURLConnection con = null;
 		try {
 			url = new URL(IMAGE_URL + String.valueOf(hash));
-			System.out.println(IMAGE_URL + String.valueOf(hash));
-			con = (HttpURLConnection ) url.openConnection();
-			con.setConnectTimeout(3000);
-			con.setReadTimeout(3000);
+			HttpURLConnection connection = ( HttpURLConnection ) url.openConnection();
+			connection.setConnectTimeout(3000);
+			connection.setReadTimeout(3000);
+			DocumentParser documentParser = new DocumentParser(connection);
+//	    	documentParser.downloadAndParse(hash);
+	    	url = documentParser.downloadAndParse(hash, connection); //documentParser.getImageURL();
+//	    	con = (HttpURLConnection ) urlConnection;
+//			con.setConnectTimeout(3000);
+//			con.setReadTimeout(3000);
 			bool = true;
+//	    	DocumentParser documentParser = new DocumentParser(urlConnection);
+//	    	documentParser.downloadAndParse(hash);
+	    	
 			//statusCode = con.getResponseCode();
 		} catch (Exception e) {
-			if ( !(e instanceof SocketTimeoutException) )
+			if ( !(e instanceof SocketTimeoutException) && !( e instanceof FileNotFoundException ))
 				e.printStackTrace();
-		} finally {
-			con.disconnect();
 		}
 		return bool; //( statusCode == 200 ) ? true : false;
 	}
@@ -71,21 +79,22 @@ public class URLValidator {
 	 * @return {@link URLValidator#url}
 	 */
 	public URL getImageURL() throws NullPointerException  {
-		Element element = null;
-		URL directURL = null;
-		try {
-			element = Jsoup.parse(url, 1000).getElementsByAttributeValue("rel", "image_src").first();
-			if ( element != null ) {
-				directURL = new URL(element.attr("href").toString());
-				element = null;
-			}
-			else
-				throw new NullPointerException("There was no Element for image source at: " + url.toString());
-		} catch (Exception e) {
-			System.err.println("[Downloader] Could not receive direct image link ( " + url.toString() + ") ");
-			e.printStackTrace();
-		}
-		return directURL;
+//		Element element = null;
+//		URL directURL = null;
+//		try {
+//			element = Jsoup.parse(url, 1000).getElementsByAttributeValue("rel", "image_src").first();
+//			if ( element != null ) {
+//				directURL = new URL(element.attr("href").toString());
+//				element = null;
+//			}
+//			else
+//				throw new NullPointerException("There was no Element for image source at: " + url.toString());
+//		} catch (Exception e) {
+//			System.err.println("[Downloader] Could not receive direct image link ( " + url.toString() + ") ");
+//			e.printStackTrace();
+//		}
+    	System.out.println(url.toString());
+		return url;
 	}
 
 }
