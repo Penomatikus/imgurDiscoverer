@@ -1,6 +1,7 @@
 package imgurDiscoverer.backend.settings;
 
 import imgurDiscoverer.backend.logic.Singleton;
+import imgurDiscoverer.backend.net.Downloader;
 
 /**
  * Holds and monitors program information like, 
@@ -34,6 +35,10 @@ public class ProgramMonitor implements Singleton {
 	 * All registered downloaders
 	 */
 	private static int registeredDownloaders;
+	/**
+	 * Indicates the {@link Downloader}s to stop if true
+	 */
+	private static volatile short downloadSignal;
 	
 	/**
 	 * Holds and monitors program information like, 
@@ -126,6 +131,25 @@ public class ProgramMonitor implements Singleton {
 	 */
 	public static void setAllProgressedFiles(long allProgressedFiles) {
 		ProgramMonitor.allProgressedFiles = allProgressedFiles;
+	}
+	
+	/**
+	 * Sends the {@link Downloader}s a signal to finish their work
+	 * @param shouldStop
+	 * @throws IllegalAccessException 
+	 */
+	public static void sendStopSignalToDownloaders(short newSignal) throws IllegalAccessException{
+		if ( newSignal == Downloader.SIGNAL_RUN || newSignal == Downloader.SIGNAL_STOP )
+			ProgramMonitor.downloadSignal = newSignal;
+		else
+			throw new IllegalAccessException("Use Downloader.SIGNAL_STOP or .SIGNAL_RUN ( " + newSignal + " used ).");
+	}
+	
+	/**
+	 * @return	{@link ProgramMonitor#stopSignal}
+	 */
+	public static synchronized short getDownloadSignal(){
+		return ProgramMonitor.downloadSignal;
 	}
 
 }

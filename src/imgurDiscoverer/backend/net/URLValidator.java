@@ -1,15 +1,10 @@
 package imgurDiscoverer.backend.net;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
-
-import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
-import org.jsoup.nodes.Element;
-
 
 /**
  * Provides an object, with the purpose to verify if an certain
@@ -40,7 +35,15 @@ public class URLValidator {
 	/**
 	 * The {@link URL} to connect with, looking for an image
 	 */
-	public URL url;
+	private URL url;
+	/**
+	 * The open connection to the imgur server
+	 */
+	private HttpURLConnection connection;
+	/**
+	 * Used to extract the image 
+	 */
+	private DocumentParser documentParser;
 	
 	/**
 	 * Opens a connection to imgur for the hash and will analyze 
@@ -50,50 +53,36 @@ public class URLValidator {
 	 * @param hash	The generated hash which might result into an image on imgur
 	 * @return	true if the status code is 200
 	 */
-	public boolean isValid(char[] hash){
+	public boolean isValid(char[] hash, boolean doDownloadSource){
 		boolean bool = false; 
 		try {
 			url = new URL(IMAGE_URL + String.valueOf(hash));
-			HttpURLConnection connection = ( HttpURLConnection ) url.openConnection();
+			connection = ( HttpURLConnection ) url.openConnection();
 			connection.setConnectTimeout(3000);
 			connection.setReadTimeout(3000);
-			DocumentParser documentParser = new DocumentParser(connection);
-//	    	documentParser.downloadAndParse(hash);
-	    	url = documentParser.downloadAndParse(hash, connection); //documentParser.getImageURL();
-//	    	con = (HttpURLConnection ) urlConnection;
-//			con.setConnectTimeout(3000);
-//			con.setReadTimeout(3000);
+	    	if ( !doDownloadSource ) {
+	    		documentParser = new DocumentParser();
+	    		documentParser.downloadAndParse(hash, connection);
+	    		url = documentParser.getImageURL();
+	    	} 
+	    	else {
+	    		connection.connect();
+	    	}
+	    	connection.disconnect();
+	    	url.toString(); // throws NullPointerExecption if the parsing was not succesfull.
 			bool = true;
-//	    	DocumentParser documentParser = new DocumentParser(urlConnection);
-//	    	documentParser.downloadAndParse(hash);
-	    	
-			//statusCode = con.getResponseCode();
 		} catch (Exception e) {
-			if ( !(e instanceof SocketTimeoutException) && !( e instanceof FileNotFoundException ))
+			if ( !(e instanceof SocketTimeoutException) && !(e instanceof FileNotFoundException))
 				e.printStackTrace();
 		}
-		return bool; //( statusCode == 200 ) ? true : false;
+		return bool; 
 	}
 	
 	/**
 	 * @return {@link URLValidator#url}
+	 * @throws IOException 
 	 */
-	public URL getImageURL() throws NullPointerException  {
-//		Element element = null;
-//		URL directURL = null;
-//		try {
-//			element = Jsoup.parse(url, 1000).getElementsByAttributeValue("rel", "image_src").first();
-//			if ( element != null ) {
-//				directURL = new URL(element.attr("href").toString());
-//				element = null;
-//			}
-//			else
-//				throw new NullPointerException("There was no Element for image source at: " + url.toString());
-//		} catch (Exception e) {
-//			System.err.println("[Downloader] Could not receive direct image link ( " + url.toString() + ") ");
-//			e.printStackTrace();
-//		}
-    	System.out.println(url.toString());
+	public URL getImageURL() throws NullPointerException, IOException  {
 		return url;
 	}
 

@@ -8,8 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
-import org.omg.PortableServer.ThreadPolicy;
-
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
@@ -65,7 +63,7 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	/**
 	 * 
 	 */
-	private Thread[] threads;
+	private static Thread[] threads;
 	/**
 	 * The {@link ImageBoxArea} to pass the generated {@link ImageBox}es to
 	 */
@@ -166,23 +164,29 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected Void doInBackground() throws Exception {
-		DownloadManager.isRunning = true;
+		// Marks the download process as running
 		ProgramMonitor.setIsDownloadersAreRunning(true);
 		try {
+			// Revoke old signal to stop for the Downloades
+			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_RUN);
+
 			int size = settings.getProgramSettings().getThreads();
 			updateLabel(currentTask, "Current task: Prepareing " + size + " downloaders.");
 			Thread.sleep(200);
+			
 			prepareDownloaders();
 			updateLabel(currentTask, "Current task: Starting " + size + " downloaders.");
 			Thread.sleep(200);
+			
 			startDownloaders();
 			System.out.println(settings.toStaticString());
 			updateLabel(currentTask, "Current task: downloading...");
-			while ( isRunning ); // wait until some one will change declaration "isRunning" 
+			
+			joiningDownloaders();
 			updateLabel(currentTask, "Current task: Waiting for all downloaders to stop. ( No new downloads )");
 			stopDownloaders();
-			//while ( ProgramMonitor.getRegisteredDownloaders() != 0 ); // wait for all downloaders to stop
 		} catch (Exception e) {
+			System.out.println("aua");
 			e.printStackTrace();
 		}
 		return null;
@@ -220,14 +224,6 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	@Override
 	protected void done() {
 		ProgramMonitor.setIsDownloadersAreRunning(false);
-		/**
-		 * Since we assume, the program was running a long time and
-		 * the user will restart searching for images. It would be nice
-		 * to give the gc a hint, to perform its work. I know this
-		 * is not good practice, however there is this nasty bufferedimage
-		 * data behavior to flood the memory, so we should do this action.
-		 */
-		System.gc(); 		
 		updateLabel(currentTask, "Current task: none");
 	}
 	
@@ -257,13 +253,19 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 		}
 	}
 	
+	private void joiningDownloaders() throws InterruptedException{
+		int size = downloaders.size();
+		for ( int i = 0; i < size; i++ )
+			threads[i].join();
+	}
+	
 	/**
 	 * Stops all running {@link Downloader}s
 	 */
-	private void stopDownloaders(){
+	private synchronized static void stopDownloaders(){
 		int size = threads.length;
 		for ( int i = 0; i < size; i++ ) {
-			downloaders.get(i).cancel();
+			threads[i].interrupt();
 			System.out.println("[Download manager] stopping " + i);
 		}
 	}
@@ -274,7 +276,13 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 */
 	public synchronized static void cancelDownloadProcess(){
 		System.out.println("STOP.");
-		DownloadManager.isRunning = false;
+		try {
+			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_STOP);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		while ( ProgramMonitor.getRegisteredDownloaders() > 0 );
+		DownloadManager.stopDownloaders();
 	}
 	
 	/**

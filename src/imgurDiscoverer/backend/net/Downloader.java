@@ -23,7 +23,7 @@ import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.time.Stopwatch;
 
-//service:jmx:rmi:///jndi/rmi://192.168.178.48:9010/jmxrmi
+//service:jmx:rmi:///jndi/rmi://141.45.206.169:9010/jmxrmi
 /**
  * 141.45.206.249
  * -Xms128m -Xmx325m -XX:GCTimeRatio=19 -XX:+UseParallelOldGC -XX:+DisableExplicitGC -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=0
@@ -64,6 +64,15 @@ import imgurDiscoverer.backend.time.Stopwatch;
 public class Downloader implements Runnable {
 	
 	/**
+	 * Class indicator for a running signal
+	 */
+	public static final short SIGNAL_RUN = 1;
+	/**
+	 * Class indicator for a stopping signal
+	 */
+	public static final short SIGNAL_STOP = 0;
+	
+	/**
 	 * The {@link DownloadManager} for all {@link Downloader}s to use, 
 	 * for passing the generated {@link ImageData} to
 	 */
@@ -92,11 +101,6 @@ public class Downloader implements Runnable {
 	 * The generated hash to lookup
 	 */
 	private char[] hash;
-	/**
-	 * Indicates if the {@link Downloader} is still processing a download
-	 * or creating the {@link ImageData}
-	 */
-	private volatile boolean isRunning;
 	/**
 	 * For catching the preferred settings to use
 	 */
@@ -153,10 +157,9 @@ public class Downloader implements Runnable {
 		this.imagePath = settings.getDirectorySettings().getPathForImages();
 		this.urlValidator = new URLValidator();
 		this.generator = new HashGenerator();
-		this.isRunning = true;
 		this.settings = Settings.createSettings();
-		this.foundHashes = new ArrayList<>(500);
-		this.notFoundHashes = new ArrayList<>(500);
+		this.foundHashes = new ArrayList<>(200);
+		this.notFoundHashes = new ArrayList<>(200);
 		ProgramMonitor.setRegisteredDownloaders(1);
 	}
 	
@@ -175,28 +178,16 @@ public class Downloader implements Runnable {
 		boolean doNotFound = settings.getProgramSettings().isSaveNotFoundHashes();
 		long allowed = settings.getProgramSettings().getMaxMegabyte();
 		
-		while ( isRunning ) {
+		while ( ProgramMonitor.getDownloadSignal() == SIGNAL_RUN ) {
 			long current = (long) ProgramMonitor.getDownloadedMegabyteAtRuntime();
-
 			if ( current < allowed )
 				process();
-			else 
-				cancel();
-			putHashesToLists(doFound, doNotFound);
-			//throttleDown();
-			
+		//	putHashesToLists(doFound, doNotFound);
 		}
+		
 		ProgramMonitor.setRegisteredDownloaders(
 				ProgramMonitor.getRegisteredDownloaders() - 1);
 		System.out.println(" angehalten.");
-	}
-	
-	private void throttleDown(){
-		try {
-			Thread.sleep(500);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -217,7 +208,7 @@ public class Downloader implements Runnable {
 		tmp = new ArrayList<>(1);
 		try {
 			hash = generator.generateHash();
-			if ( urlValidator.isValid( hash )) {
+			if ( urlValidator.isValid( hash, notAllowDownload )) {
 				if ( notAllowDownload ) 
 					tmp.add(new ImageData(String.valueOf(hash)));
 			    else
@@ -278,7 +269,7 @@ public class Downloader implements Runnable {
 			
 			// File writing part
 			File file = new File(imagePath.getAbsolutePath() + File.separator + String.valueOf(hash) + "." + extension);
-			ImageIO.write(bufferedImage, "JPEG", file); // reduce the file size bay 75% 
+			ImageIO.write(bufferedImage, "JPEG", file); // reduce the file size by 75% 
 			double bytes = file.length();
 			double kilobytes = (bytes / 1024);
 			double megabytes = (kilobytes / 1024);
@@ -298,15 +289,4 @@ public class Downloader implements Runnable {
 		}
 		return new ImageData(String.valueOf(hash));
 	}
-	
-	/**
-	 * Causes the {@link Downloader} to stop, however it waiting
-	 * until all started processes are done.
-	 */
-	public void cancel(){
-		this.isRunning = false;
-	}
-	
-	
-
 }
