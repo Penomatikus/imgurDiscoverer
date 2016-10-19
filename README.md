@@ -23,10 +23,13 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 * Images to file: All found images will be saved in a custom directory. By default, this is the systems tmp directory. Since the total data size of downloaded images will be accumulate per download session, this directory should not be changed. Choose the images you want to save per single click on their thumbnail and use the save button on the upper hand of the program. This will open a new dialog for choosing a directory to copy them to. 
 * Don't download images: In case your system running on low resources or you don't want to waste space on your hard disk, you have the possibility to let the program only check if a certian image (hash) does exists on the server. Then no single image will be downloaded and an empty thumbnail will be added with the hash as description to the overview. 
 
-### How to use
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vitae sodales dolor. Nam eget tempus nisl. Donec pulvinar felis a justo pharetra eleifend. Praesent nunc est, fermentum id maximus non, bibendum quis diam. Vivamus id accumsan nisi. Cras at orci pulvinar, tempor eros sed, faucibus metus. Aenean mattis leo in velit maximus, at commodo mauris lobortis. Morbi quis purus arcu. Morbi justo nunc, tincidunt eu dolor a, suscipit condimentum lectus.
+### Geek stuff
 
-Nunc facilisis purus at sem elementum, vel molestie diam accumsan. Nam non purus vel lacus iaculis vulputate. Vestibulum vitae purus et enim malesuada sagittis non non leo. Mauris tristique justo ac quam feugiat, vel imperdiet nunc semper. Fusce consequat ligula purus, vel pretium dui semper vitae. Sed vestibulum tortor dui, at placerat tellus sagittis vitae. Maecenas tempor eget odio ac placerat. Aliquam erat volutpat. Quisque elementum consequat turpis at dapibus. Mauris quis tempor nunc. Donec porttitor turpis vel dolor mollis sollicitudin. Etiam nisi ligula, laoreet at lacinia et, hendrerit eu nisi. Quisque dignissim iaculis imperdiet.
+<img align="left" src="https://i.imgur.com/3lHA3x3.png" width="1100">  
+The above screenshot shows the programs CPU usage and used heap after ten minutes runtime. There where 64 threads in use. As you can see, the average CPU usage is around 20% - 25%. Thoose high dancing oscillations of the amplitudes marking image copy processes by the user. When constantly scrolled, the CPU usage reaches an average of 25% - 35%, due to a bunch of rendering processes. 
+
+ 
+
 
 ### Hack the start parameter
 Since this program is written in Java, you can change the JVM arguments of the jar file. 
