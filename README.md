@@ -17,11 +17,11 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
   
   
 ### Customizable program settings  
-* Threads: Choose between 2, 4, 8, 16, 32 or 64 threads. A single thread handels the generation of hashes, thoose validation and download task. Use more, if you want faster results. However, be carefull. Imgur might notice your heavy connection rate to their server and temporary blocks your IP.
-* Maximum megabytes ( mb ) to download: Choose between 50, 100, 150, 200, 250, 300, 350, 400, 450, 500 or 550 megabytes as maximum download size in total. Is this limit reached, all current download tasks will finish and no new one will start.
-* Generated hashes to file: Choose if the found and / or not found hashes should be written into a file, after a download session. You might want to reuse them for other purposes. Moreover, the directory for storing can be changed.
-* Images to file: All found images will be saved in a custom directory. By default, this is the systems tmp directory. Since the total data size of downloaded images will be accumulate per download session, this directory should not be changed. Choose the images you want to save per single click on their thumbnail and use the save button on the upper hand of the program. This will open a new dialog for choosing a directory to copy them to. 
-* Don't download images: In case your system running on low resources or you don't want to waste space on your hard disk, you have the possibility to let the program only check if a certian image (hash) does exists on the server. Then no single image will be downloaded and an empty thumbnail will be added with the hash as description to the overview. 
+* **Threads**: Choose between 2, 4, 8, 16, 32 or 64 threads. A single thread handels the generation of hashes, thoose validation and download task. Use more, if you want faster results. However, be carefull. Imgur might notice your heavy connection rate to their server and temporary blocks your IP.
+* **Maximum megabytes ( mb ) to download**: Choose between 50, 100, 150, 200, 250, 300, 350, 400, 450, 500 or 550 megabytes as maximum download size in total. Is this limit reached, all current download tasks will finish and no new one will start.
+* **Generated hashes to file**: Choose if the found and / or not found hashes should be written into a file, after a download session. You might want to reuse them for other purposes. Moreover, the directory for storing can be changed.
+* **Images to file**: All found images will be saved in a custom directory. By default, this is the systems tmp directory. Since the total data size of downloaded images will be accumulate per download session, this directory should not be changed. Choose the images you want to save per single click on their thumbnail and use the save button on the upper hand of the program. This will open a new dialog for choosing a directory to copy them to. 
+* **Don't download images**: In case your system running on low resources or you don't want to waste space on your hard disk, you have the possibility to let the program only check if a certian image (hash) does exists on the server. Then no single image will be downloaded and an empty thumbnail will be added with the hash as description to the overview. 
 
 ### Geek stuff
 
@@ -31,5 +31,17 @@ The above screenshot shows the programs CPU usage and used heap after ten minute
  
 
 
-### Hack the start parameter
-Since this program is written in Java, you can change the JVM arguments of the jar file. 
+#### JVM options
+The default and recommended JVM arguments used are:   
+
+| Option | Description |  
+| --- | --- |   
+| `-Xms128m` | The -Xms option sets the initial and minimum Java heap size. The Java heap (the “heap”) is the part of the memory where blocks of memory are allocated to objects and freed during garbage collection. [(link)](https://docs.oracle.com/cd/E13150_01/jrockit_jvm/jrockit/jrdocs/refman/optionX.html) |  
+| `-Xmx325m` | This option sets the maximum Java heap size. The Java heap (the “heap”) is the part of the memory where blocks of memory are allocated to objects and freed during garbage collection. Depending upon the kind of operating system you are running, the maximum value you can set for the Java heap can vary. [(link)](https://docs.oracle.com/cd/E13150_01/jrockit_jvm/jrockit/jrdocs/refman/optionX.html) |  
+| `-XX:GCTimeRatio=50` | The -XX:GCTimeRatio option specifies the ratio of the time spent outside the garbage collection (for example, the time spent for application execution) to the time spent in the garbage collection. [(link)](https://docs.oracle.com/cd/E15289_01/doc.40/e15062/optionxx.htm#BABBDEIF) |  
+| `-XX:+UseParallelOldGC` | Use parallel garbage collection for the full collections. Enabling this option automatically sets -XX:+UseParallelGC. [(link)](http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#BehavioralOptions) |  
+| `-XX:+DisableExplicitGC` | By default calls to System.gc() are enabled (-XX:-DisableExplicitGC). Use -XX:+DisableExplicitGC to disable calls to System.gc(). Note that the JVM still performs garbage collection when necessary. [(link)](http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#BehavioralOptions)  |  
+| `-XX:MaxGCPauseMillis=150` | Sets a target for the maximum GC pause time. This is a soft goal, and the JVM will make its best effort to achieve it. [(link)](http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#G1Options) |  
+| `-XX:InitiatingHeapOccupancyPercent=0` | Percentage of the (entire) heap occupancy to start a concurrent GC cycle. It is used by GCs that trigger a concurrent GC cycle based on the occupancy of the entire heap, not just one of the generations (e.g., G1). A value of 0 denotes 'do constant GC cycles'. The default value is 45. [(link)](http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#G1Options) |	 
+**Note**: Still working on the best options[], since this is new territory for me. Please provide suggestions!
+  
