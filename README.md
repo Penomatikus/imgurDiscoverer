@@ -45,3 +45,7 @@ The default and recommended JVM arguments used are:
 | `-XX:InitiatingHeapOccupancyPercent=0` | Percentage of the (entire) heap occupancy to start a concurrent GC cycle. It is used by GCs that trigger a concurrent GC cycle based on the occupancy of the entire heap, not just one of the generations (e.g., G1). A value of 0 denotes 'do constant GC cycles'. The default value is 45. [(link)](http://www.oracle.com/technetwork/java/javase/tech/vmoptions-jsp-140102.html#G1Options) |	 
 **Note**: Still working on the best options[], since this is new territory for me. Please provide suggestions!
   
+#### The math
+If you ever wonder why 99% of the found hashes are only five signs long and if you interested in the mathematical explanation, then go-ahead reading.  
+( the math is under construction )
+  
