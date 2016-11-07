@@ -13,7 +13,7 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Windows: &nbsp;Not available now.   
 <i><u>Or:</u></i>  
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download *.jar: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.   
-`Downloading only the single executable .jar file, you have to set the JVM arguments by yourself. This might be helpful, if you encounter some performance issues and / or you want to try something else.`
+`By downloading only the single executable .jar file, you have to set the JVM arguments by yourself. This might be helpful, if you encounter some performance issues and / or you want to try something else.`
 ***
 ### Short preview: Program  
 <img align="left" src="https://i.imgur.com/ZzO5hIE.png" width="1100"> 
