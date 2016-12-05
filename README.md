@@ -8,7 +8,7 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ![RAM Icon](https://cdn3.iconfinder.com/data/icons/discovery/16x16/devices/gnome-dev-media-cf.png) RAM locked between: 125MB - 250MB. Average is ~180MB ( This tool handels a lot of image data )
   ***
 ### Download
-<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Current release](https://github.com/Penomatikus/imgurDiscoverer/releases/tag/1.0beta)   
+<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Current release](https://github.com/Penomatikus/imgurDiscoverer/releases/tag/1.0.0beta)   
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download OSX: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.   
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Windows: &nbsp;Not available now.   
 <i><u>Or:</u></i>  
