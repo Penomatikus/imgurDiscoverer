@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import imgurDiscoverer.backend.settings.ProgramMonitor;
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 
 public class Utils {

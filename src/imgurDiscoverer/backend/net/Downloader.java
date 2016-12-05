@@ -19,7 +19,7 @@ import imgurDiscoverer.backend.image.ImageDownScaler;
 import imgurDiscoverer.backend.image.ImageFileReader;
 import imgurDiscoverer.backend.logic.HashGenerator;
 import imgurDiscoverer.backend.logic.ImageData;
-import imgurDiscoverer.backend.settings.ProgramMonitor;
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.time.Stopwatch;
 

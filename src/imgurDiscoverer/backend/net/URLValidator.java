@@ -73,7 +73,8 @@ public class URLValidator {
 	    	url.toString(); // throws NullPointerExecption if the parsing was not succesfull.
 			bool = true;
 		} catch (Exception e) {
-			if ( !(e instanceof SocketTimeoutException) && !(e instanceof FileNotFoundException))
+			if ( !(e instanceof SocketTimeoutException) && !(e instanceof FileNotFoundException) &&
+				 !(e instanceof NullPointerException )	)
 				e.printStackTrace();
 		}
 		return bool; 

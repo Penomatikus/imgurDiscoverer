@@ -23,9 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.resources.ResourceImage;
-import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.frameextra.SettingsWindow;
 
@@ -177,6 +177,7 @@ public class ControlPanel extends JPanel {
 		});
 		
 		stop.addActionListener((e) -> {
+			
 			if ( ProgramMonitor.isDownloadersAreRunning() ) {
 				InformationPanel.getCurrentTaskDes().setText("Current task: "
 						+ "Waiting for all downloaders to stop. ( No new downloads )");

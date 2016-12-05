@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
@@ -26,10 +27,12 @@ public class ProgramWindow extends JFrame implements Window {
 	private ProgramWindow self;
 	private final WindowAdapter windowAdapter = new WindowAdapter() {
 		public void windowClosing(java.awt.event.WindowEvent e) {
-			int i = JOptionPane.showConfirmDialog(self, "Do you realy want to quit imgurDiscoverer?\n"
-					+ "\nNote:\n"
-					+ "All current download processes will be finished in the background.", "Quit?",
-					JOptionPane.YES_NO_OPTION);
+			String message = "Do you realy want to quit imgurDiscoverer?";
+			if ( ProgramMonitor.isDownloadersAreRunning() ) {
+				message.concat("\nNote:\n"
+					+ "All current download processes will be finished in the background.");
+			}
+			int i = JOptionPane.showConfirmDialog(self, message, "Quit?", JOptionPane.YES_NO_OPTION);
 			if ( i == 0 ){
 				DownloadManager.cancelDownloadProcess();
 				dispose();	

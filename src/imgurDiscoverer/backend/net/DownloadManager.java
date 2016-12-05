@@ -10,7 +10,8 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import imgurDiscoverer.backend.logic.ImageData;
-import imgurDiscoverer.backend.settings.ProgramMonitor;
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
+import imgurDiscoverer.backend.monitoring.ThreadPolice;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
@@ -296,6 +297,8 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 * in {@link DownloadManager#stopDownloaders()}
 	 */
 	public synchronized static void cancelDownloadProcess(){
+//		Thread officer = new Thread(ThreadPolice.create(threads));
+//		officer.start();
 		try {
 			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_STOP);
 		} catch (IllegalAccessException e) {

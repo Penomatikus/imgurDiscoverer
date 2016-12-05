@@ -1,4 +1,4 @@
-package imgurDiscoverer.backend.settings;
+package imgurDiscoverer.backend.monitoring;
 
 import java.net.NoRouteToHostException;
 

@@ -1,10 +1,13 @@
 package imgurDiscoverer.frontent.frameextra;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,8 +23,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 import imgurDiscoverer.backend.resources.ResourceImage;
-import imgurDiscoverer.backend.settings.ProgramMonitor;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ImagePanel;
@@ -174,6 +177,11 @@ public class SettingsWindow extends JFrame implements Window {
 		changeDic1.addActionListener(actionListener);
 		directories.add(changeDic1);
 		
+		// TODO: program the functions and enable the components
+		saveFound.setEnabled(false);
+		saveNotFound.setEnabled(false);
+		changeDic1.setEnabled(false);
+		
 		String dic1 = settings.getDirectorySettings().getPathForHashes().getAbsolutePath();
 		saveHashDes = new JLabel(dic1);
 		saveHashDes.setBounds(50, 74, 375, 30);
@@ -190,6 +198,17 @@ public class SettingsWindow extends JFrame implements Window {
 		directories.add(saveImagePath);
 		
 		changeDic2 = new JButton(new ImageIcon(ResourceImage.dic));
+		changeDic2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
 		changeDic2.setBounds(15, 129, 20, 20);
 		changeDic2.addActionListener(actionListener);
 		directories.add(changeDic2);

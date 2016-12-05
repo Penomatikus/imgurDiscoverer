@@ -1,5 +1,6 @@
 package imgurDiscoverer.backend.net;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -11,7 +12,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import imgurDiscoverer.backend.settings.ProgramMonitor;
+import imgurDiscoverer.backend.monitoring.ProgramMonitor;
 
 /**
  * Provides an object, which will download a web document
@@ -59,19 +60,26 @@ public class DocumentParser {
 	public void downloadAndParse(char[] hash, HttpURLConnection connection) throws IOException {
 		ReadableByteChannel channel = null;
 		InputStream stream = null;
+		boolean success = false;
 		try {
 			stream = connection.getInputStream();
-			if ( Thread.interrupted() )
-				connection.disconnect();
 			channel = Channels.newChannel(stream);
+			success = true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			channel.close();
+			
+			if ( !(e instanceof NullPointerException) && !(e instanceof FileNotFoundException))
+				e.printStackTrace();
 			if ( e instanceof NoRouteToHostException )
 				ProgramMonitor.setNoRouteToHostExceptionCounter(
 						ProgramMonitor.getNoRouteToHostExceptionCounter() + 1);
 		} 
 		
+		if ( success )
+			download(channel, hash);
+		
+	}
+
+	private void download(ReadableByteChannel channel, char[] hash) throws IOException{
 		int allocatedSize = 8400;
 		ByteBuffer buffer = ByteBuffer.allocate(allocatedSize);
 		while ( buffer.hasRemaining() )
@@ -94,8 +102,7 @@ public class DocumentParser {
 		else {
 			data = null;
 			subData = null;
-		}
-		
+		}		
 	}
 
 	/**
