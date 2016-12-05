@@ -10,7 +10,7 @@ You can find the imgur privacy police at: [Imgur privacy police](https://imgur.c
 ### Download
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Linux: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Current release](https://github.com/Penomatikus/imgurDiscoverer/releases/tag/1.0.0beta)   
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download OSX: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.   
-<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Windows: &nbsp;Not available now.   
+<img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download Windows: &nbsp;[Current release](https://github.com/Penomatikus/imgurDiscoverer/releases/tag/1.0.0beta_jar)  
 <i><u>Or:</u></i>  
 <img algin="left" src="https://cdn4.iconfinder.com/data/icons/gnome-desktop-icons-png/PNG/32/Gnome-System-Software-Installer-32.png" width="16"> Download *.jar: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Not available now.   
 `By downloading only the single executable .jar file, you have to set the JVM arguments by yourself. This might be helpful, if you encounter some performance issues and / or you want to try something else.`
