@@ -1,0 +1,16 @@
+Thank you for using imgurDiscoverer.
+
+How to run: ( fancy way )
+1.) extract to a folder of you choice ( /opt/ might be a good one )
+2.) give "run.sh" executable rights
+3.) create a new .desktop file 
+4.) in you .desktop file use the path to "run.sh" as executable
+5.) in your .desktop file user the path to "imgurDiscoverer.png" as icon
+6.) place the file to your ~/.local/share/applications folder
+7.) give your new .desktop file executable rights
+8.) double click on the .desktop file
+
+How to run: ( fast way )
+1.) extract to a folder of you choice ( /opt/ might be a good one )
+2.) give "run.sh" executable rights
+3.) run "run.sh"
