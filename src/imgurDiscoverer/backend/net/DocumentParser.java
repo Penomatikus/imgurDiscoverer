@@ -3,12 +3,15 @@ package imgurDiscoverer.backend.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.NoRouteToHostException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import imgurDiscoverer.backend.settings.ProgramMonitor;
 
 /**
  * Provides an object, which will download a web document
@@ -53,20 +56,34 @@ public class DocumentParser {
 	 * @param urlConnection	The connection object
 	 * @throws IOException If an error occurred while extracting the image link.
 	 */
-	public void downloadAndParse(char[] hash, HttpURLConnection urlConnection) throws IOException {
-		ReadableByteChannel channel = Channels.newChannel(urlConnection.getInputStream());
-		int allocatedSize = 8300;
+	public void downloadAndParse(char[] hash, HttpURLConnection connection) throws IOException {
+		ReadableByteChannel channel = null;
+		InputStream stream = null;
+		try {
+			stream = connection.getInputStream();
+			if ( Thread.interrupted() )
+				connection.disconnect();
+			channel = Channels.newChannel(stream);
+		} catch (Exception e) {
+			e.printStackTrace();
+			channel.close();
+			if ( e instanceof NoRouteToHostException )
+				ProgramMonitor.setNoRouteToHostExceptionCounter(
+						ProgramMonitor.getNoRouteToHostExceptionCounter() + 1);
+		} 
+		
+		int allocatedSize = 8400;
 		ByteBuffer buffer = ByteBuffer.allocate(allocatedSize);
 		while ( buffer.hasRemaining() )
 				channel.read(buffer);
-		
+		channel.close();
 		byte[] data = buffer.array();
-		byte[] subData = new byte[400];
+		byte[] subData = new byte[500];
 		buffer.clear();
 		for ( int i = 7900, j = 0; i < allocatedSize; i++, j++ )
 			subData[j] = data[i];
 		
-		String dataString = new String(subData);
+		String dataString = new String(data);
 		Pattern pattern = Pattern.compile("http://i.imgur.com/" + String.valueOf(hash) + ".(jpg|png|gif)");
 		Matcher matcher = pattern.matcher(dataString);
 		if ( matcher.find() ) {
@@ -77,11 +94,10 @@ public class DocumentParser {
 		else {
 			data = null;
 			subData = null;
-			throw new IOException("An error occurred while extracting the image link.");
 		}
 		
 	}
-	
+
 	/**
 	 * @return {@link DocumentParser#imageURL}
 	 */

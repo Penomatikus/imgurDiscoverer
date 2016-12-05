@@ -4,13 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.WindowConstants;
 
+import imgurDiscoverer.backend.net.DownloadManager;
 import imgurDiscoverer.backend.resources.ResourceImage;
 import imgurDiscoverer.backend.utilities.Utils;
 import imgurDiscoverer.frontent.componets.ControlPanel;
@@ -21,8 +23,23 @@ public class ProgramWindow extends JFrame implements Window {
 
 	private static final long serialVersionUID = 1L;
 	private ImageBoxArea imageBoxArea;
+	private ProgramWindow self;
+	private final WindowAdapter windowAdapter = new WindowAdapter() {
+		public void windowClosing(java.awt.event.WindowEvent e) {
+			int i = JOptionPane.showConfirmDialog(self, "Do you realy want to quit imgurDiscoverer?\n"
+					+ "\nNote:\n"
+					+ "All current download processes will be finished in the background.", "Quit?",
+					JOptionPane.YES_NO_OPTION);
+			if ( i == 0 ){
+				DownloadManager.cancelDownloadProcess();
+				dispose();	
+			}
+		};
+	};
 	
 	public ProgramWindow(String title, int width, int height) {
+		this.self = this;
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ResourceImage.programIcon));
 		setTitle(title);
 		setLayout(new BorderLayout());
@@ -35,9 +52,9 @@ public class ProgramWindow extends JFrame implements Window {
 		int yLoc = (int)display[1] / 2 - (int)getSize().getHeight() / 2;
 		setLocation(xLoc, yLoc);
 		initComponents();
+		addWindowListener(windowAdapter);
 		setVisible(true);
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 	}
 	

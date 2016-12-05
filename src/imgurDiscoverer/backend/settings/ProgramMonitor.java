@@ -1,5 +1,7 @@
 package imgurDiscoverer.backend.settings;
 
+import java.net.NoRouteToHostException;
+
 import imgurDiscoverer.backend.logic.Singleton;
 import imgurDiscoverer.backend.net.Downloader;
 
@@ -39,6 +41,10 @@ public class ProgramMonitor implements Singleton {
 	 * Indicates the {@link Downloader}s to stop if true
 	 */
 	private static volatile short downloadSignal;
+	/**
+	 * Indicates all {@link NoRouteToHostException} encounters per session
+	 */
+	private static volatile int noRouteToHostExceptionCounter;
 	
 	/**
 	 * Holds and monitors program information like, 
@@ -50,6 +56,7 @@ public class ProgramMonitor implements Singleton {
 		allDownloadedFiles = 0l;
 		allProgressedFiles = 0l;
 		registeredDownloaders = 0;
+		noRouteToHostExceptionCounter = 0;
 	}
 
 	/**
@@ -89,6 +96,14 @@ public class ProgramMonitor implements Singleton {
 	 */
 	public static synchronized double getDownloadedMegabyteAtRuntime(){
 		return ProgramMonitor.downloadedMegabyteAtRuntime;
+	}
+	
+	/**
+	 * Resets the downloaded megabyte at runtime and changes the value to 0.
+	 * @return {@link ProgramMonitor#downloadedMegabyteAtRuntime}
+	 */
+	public static synchronized void resetDownloadedMegabyteAtRuntime(){
+		ProgramMonitor.downloadedMegabyteAtRuntime = 0;
 	}
 
 	/**
@@ -150,6 +165,14 @@ public class ProgramMonitor implements Singleton {
 	 */
 	public static synchronized short getDownloadSignal(){
 		return ProgramMonitor.downloadSignal;
+	}
+
+	public static synchronized int getNoRouteToHostExceptionCounter() {
+		return noRouteToHostExceptionCounter;
+	}
+
+	public static synchronized void setNoRouteToHostExceptionCounter(int noRouteToHostExceptionCounter) {
+		ProgramMonitor.noRouteToHostExceptionCounter = noRouteToHostExceptionCounter;
 	}
 
 }

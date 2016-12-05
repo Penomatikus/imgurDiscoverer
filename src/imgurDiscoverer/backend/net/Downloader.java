@@ -179,15 +179,22 @@ public class Downloader implements Runnable {
 		long allowed = settings.getProgramSettings().getMaxMegabyte();
 		
 		while ( ProgramMonitor.getDownloadSignal() == SIGNAL_RUN ) {
-			long current = (long) ProgramMonitor.getDownloadedMegabyteAtRuntime();
-			if ( current < allowed )
-				process();
+			if ( ProgramMonitor.getNoRouteToHostExceptionCounter() < 50 ) {
+				long current = (long) ProgramMonitor.getDownloadedMegabyteAtRuntime();
+				if ( current < allowed )
+					process();
+				else 
+					break;
+			} else {
+				break;
+			}
 		//	putHashesToLists(doFound, doNotFound);
 		}
 		
-		ProgramMonitor.setRegisteredDownloaders(
-				ProgramMonitor.getRegisteredDownloaders() - 1);
-		System.out.println(" angehalten.");
+		ProgramMonitor.setRegisteredDownloaders( ProgramMonitor.getRegisteredDownloaders() - 1);
+//		Thread.currentThread().interrupt();		
+//		if ( Thread.interrupted() )
+//			urlValidator.forceConnectionClose();
 	}
 	
 	/**

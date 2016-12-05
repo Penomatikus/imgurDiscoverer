@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
@@ -156,6 +157,17 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	 * to "Images: 0 / 0" if, no images was progressed before.
 	 */
 	private void prepare(){
+		// Marks the download process as running
+		ProgramMonitor.setIsDownloadersAreRunning(true);
+		// Reset all 
+		ProgramMonitor.setNoRouteToHostExceptionCounter(0);
+		ProgramMonitor.setAllDownloadedFiles(0);
+		ProgramMonitor.resetDownloadedMegabyteAtRuntime();
+		ProgramMonitor.setAllProgressedFiles(0);
+		
+		// the number of downloaded files
+		totalNumber = 0;
+		
 		bar.setMinimum((int) ProgramMonitor.getDownloadedMegabyteAtRuntime());
 		bar.setMaximum(settings.getProgramSettings().getMaxMegabyte());
 		if ( ProgramMonitor.getAllProgressedFiles() == 0 )
@@ -164,8 +176,6 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	
 	@Override
 	protected Void doInBackground() throws Exception {
-		// Marks the download process as running
-		ProgramMonitor.setIsDownloadersAreRunning(true);
 		try {
 			// Revoke old signal to stop for the Downloades
 			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_RUN);
@@ -181,10 +191,9 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 			startDownloaders();
 			System.out.println(settings.toStaticString());
 			updateLabel(currentTask, "Current task: downloading...");
-			
+
 			joiningDownloaders();
-			updateLabel(currentTask, "Current task: Waiting for all downloaders to stop. ( No new downloads )");
-			stopDownloaders();
+		//	stopDownloaders();
 		} catch (Exception e) {
 			System.out.println("aua");
 			e.printStackTrace();
@@ -224,7 +233,18 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 	@Override
 	protected void done() {
 		ProgramMonitor.setIsDownloadersAreRunning(false);
+		System.out.println("[Download manager] done.");
+		try {
+			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_STOP);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		updateLabel(currentTask, "Current task: none");
+		if ( ProgramMonitor.getNoRouteToHostExceptionCounter() >= 50 ){
+			JOptionPane.showMessageDialog(imageBoxArea, "Imgur disklikes your high traffic consumption\n"
+					+ "and is rejecting your image requests.\n"
+					+ "Please wait a moment and try again with less threads.");
+		}
 	}
 	
 	/**
@@ -253,36 +273,34 @@ public class DownloadManager extends SwingWorker<Void, ImageData>{
 		}
 	}
 	
-	private void joiningDownloaders() throws InterruptedException{
+	private void joiningDownloaders() throws InterruptedException {
 		int size = downloaders.size();
 		for ( int i = 0; i < size; i++ )
 			threads[i].join();
+		System.out.println("registered: " + ProgramMonitor.getRegisteredDownloaders());
 	}
 	
 	/**
 	 * Stops all running {@link Downloader}s
 	 */
-	private synchronized static void stopDownloaders(){
-		int size = threads.length;
-		for ( int i = 0; i < size; i++ ) {
-			threads[i].interrupt();
-			System.out.println("[Download manager] stopping " + i);
-		}
-	}
+	//	protected synchronized static void stopDownloaders(){
+//		int size = threads.length;
+//		for ( int i = 0; i < size; i++ ) {
+//			threads[i].interrupt();
+//			System.out.println("[Download manager] stopping " + i);
+//		}
+//	}
 	
 	/**
 	 * Stops the {@link DownloadManager} which will result 
 	 * in {@link DownloadManager#stopDownloaders()}
 	 */
 	public synchronized static void cancelDownloadProcess(){
-		System.out.println("STOP.");
 		try {
 			ProgramMonitor.sendStopSignalToDownloaders(Downloader.SIGNAL_STOP);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		while ( ProgramMonitor.getRegisteredDownloaders() > 0 );
-		DownloadManager.stopDownloaders();
 	}
 	
 	/**

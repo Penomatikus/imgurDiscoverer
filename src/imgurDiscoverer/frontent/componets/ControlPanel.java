@@ -89,6 +89,7 @@ public class ControlPanel extends JPanel {
 	 * Holds the new copy location for images
 	 */
 	private String newDest; 
+
 	
 	/**
 	 * Provides an object for generating a panel to control the program with user
@@ -176,8 +177,13 @@ public class ControlPanel extends JPanel {
 		});
 		
 		stop.addActionListener((e) -> {
-			if ( ProgramMonitor.isDownloadersAreRunning() ) 
+			if ( ProgramMonitor.isDownloadersAreRunning() ) {
+				InformationPanel.getCurrentTaskDes().setText("Current task: "
+						+ "Waiting for all downloaders to stop. ( No new downloads )");
+				InformationPanel.getCurrentTaskDes().setToolTipText("Current task:" 
+						+ "Waiting for all downloaders to stop. ( No new downloads )");
 				DownloadManager.cancelDownloadProcess();
+			}
 			else 
 				JOptionPane.showMessageDialog(parent,
 						"No download progress is running");

@@ -8,11 +8,8 @@
 			<attribute name="javadoc_location" value="jar:file:/home/stefan/Dropbox/klassen/jsoup-1.9.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/imgscalr-lib-4.2.jar"/>
+	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/commons-io-2.5/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/jfreechart-1.0.19/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="/home/stefan/Dropbox/klassen/jfreechart-1.0.19/lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URI;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import imgurDiscoverer.backend.settings.ProgramMonitor;
@@ -97,6 +99,12 @@ public class Utils {
 	
 	public static Color colorImgurWhite(){
 		return new Color(255, 255, 255);
+	}
+
+	public static void displayStartError() {
+		JFrame frame = new JFrame();
+		JOptionPane.showMessageDialog(frame, "Please use the run file to start\n"
+					+ "imgurDiscoverer properly.", "Error", JOptionPane.OK_OPTION);
 	}
 	
 	

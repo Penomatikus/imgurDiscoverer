@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+
 /**
  * Provides an object, with the purpose to verify if an certain
  * image-hash does exist on the imgur server. <br>
@@ -76,6 +77,10 @@ public class URLValidator {
 				e.printStackTrace();
 		}
 		return bool; 
+	}
+	
+	public void forceConnectionClose(){
+		connection.disconnect();
 	}
 	
 	/**

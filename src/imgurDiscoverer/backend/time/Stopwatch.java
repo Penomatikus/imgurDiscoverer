@@ -22,16 +22,16 @@ public class Stopwatch {
 	/**
 	 * The passed time in seconds
 	 */
-	private static volatile int timeInSeconds;
+	private int timeInSeconds;
 	/**
 	 * Indicates if the task is done
 	 */
-	private  static volatile boolean isDone;
+	private boolean isDone;
 	/**
 	 * Indicates if the task is running. 
 	 * <b>Note:</b> If so, {@link Stopwatch#go()} will have no effect.
 	 */
-	private  static volatile boolean running;
+	private  boolean running;
 	
 	/**
 	 * Provides an object, to stop the time in seconds. <br>
@@ -48,8 +48,8 @@ public class Stopwatch {
 	 * @author Stefan Jagdmann <a href="https://github.com/Penomatikus">Meet me at Github</a>
 	 */
 	public Stopwatch(int timeInSeconds) {
-		Stopwatch.timeInSeconds = timeInSeconds;
-		Stopwatch.running = false;
+		this.timeInSeconds = timeInSeconds;
+		this.running = false;
 	}
 	
 	/**
