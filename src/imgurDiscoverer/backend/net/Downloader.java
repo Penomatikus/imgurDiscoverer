@@ -174,7 +174,9 @@ public class Downloader implements Runnable {
 	 */
 	@Override
 	public void run() {
+		@SuppressWarnings("unused")
 		boolean doFound = settings.getProgramSettings().isSaveFoundHashes();
+		@SuppressWarnings("unused")
 		boolean doNotFound = settings.getProgramSettings().isSaveNotFoundHashes();
 		long allowed = settings.getProgramSettings().getMaxMegabyte();
 		
@@ -232,6 +234,7 @@ public class Downloader implements Runnable {
 	 * @param doFound		adds it to the dound list
 	 * @param doNotFound	adds it to the not found list
 	 */
+	@SuppressWarnings("unused")
 	private void putHashesToLists(boolean doFound, boolean doNotFound) {
 		if ( doFound )
 			foundHashes.add(hash);

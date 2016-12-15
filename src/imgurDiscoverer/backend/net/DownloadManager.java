@@ -11,7 +11,6 @@ import javax.swing.SwingWorker;
 
 import imgurDiscoverer.backend.logic.ImageData;
 import imgurDiscoverer.backend.monitoring.ProgramMonitor;
-import imgurDiscoverer.backend.monitoring.ThreadPolice;
 import imgurDiscoverer.backend.settings.Settings;
 import imgurDiscoverer.frontent.componets.ImageBox;
 import imgurDiscoverer.frontent.componets.ImageBoxArea;
